@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, ArrowLeft, Upload, XCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { getDepartmentById } from "../data/departments";
-import departments from "../data/departments";
 import { toast } from "@/components/ui/use-toast";
 
 const ApplicationForm = () => {
@@ -25,11 +24,8 @@ const ApplicationForm = () => {
   useEffect(() => {
     if (departmentId) {
       const dept = getDepartmentById(departmentId);
-      if (!dept) {
-        navigate("/departments");
-      } else {
-        setFormState((prev) => ({ ...prev, department: departmentId }));
-      }
+      if (!dept) navigate("/departments");
+      else setFormState((prev) => ({ ...prev, department: departmentId }));
     }
   }, [departmentId, navigate]);
 
@@ -37,7 +33,6 @@ const ApplicationForm = () => {
     const { name, value } = e.target;
     setFormState((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when user types
     if (formErrors[name]) {
       setFormErrors((prev) => {
         const newErrors = { ...prev };
@@ -55,14 +50,9 @@ const ApplicationForm = () => {
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
-
     if (!formState.name.trim()) errors.name = "Name is required";
-    if (!formState.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formState.email)) {
-      errors.email = "Email is invalid";
-    }
-    if (!formState.phone.trim()) errors.phone = "Phone is required";
+    if (!formState.email.trim() || !/\S+@\S+\.\S+/.test(formState.email)) errors.email = "Valid email is required";
+    if (!formState.phone.trim()) errors.phone = "Phone number is required";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -70,50 +60,26 @@ const ApplicationForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) {
-      toast({
-        title: "Form has errors",
-        description: "Please correct the errors and try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Form has errors", description: "Please correct them before submitting.", variant: "destructive" });
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       const formData = new FormData();
-      Object.entries(formState).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
+      Object.entries(formState).forEach(([key, value]) => formData.append(key, value));
       formData.append("form-name", "application-form");
       if (file) formData.append("resume", file);
 
-      const response = await fetch("/", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
+      const response = await fetch("/", { method: "POST", body: formData });
+      if (!response.ok) throw new Error("Submission failed");
 
       setSubmitted(true);
-
-      toast({
-        title: "Application Submitted!",
-        description: "Thank you for your interest in joining our team.",
-      });
-
+      toast({ title: "Application Submitted!", description: "Thank you for applying!" });
       setTimeout(() => navigate("/"), 3000);
     } catch (error) {
-      console.error("Form submission error:", error);
-      toast({
-        title: "Submission Error",
-        description: "There was a problem submitting your application. Please try again later.",
-        variant: "destructive",
-      });
+      toast({ title: "Submission Error", description: "Try again later.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -131,55 +97,68 @@ const ApplicationForm = () => {
   return (
     <div className="container mx-auto px-6 pt-12 pb-16">
       <div className="max-w-3xl mx-auto">
-        <button
-          className="flex items-center text-white/70 hover:text-space-accent transition-colors mb-8"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft size={18} className="mr-2" />
-          Go Back
+        <button className="flex items-center text-white/70 hover:text-space-accent mb-6" onClick={() => navigate(-1)}>
+          <ArrowLeft size={18} className="mr-2" /> Go Back
         </button>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="glass-panel rounded-2xl p-8 md:p-10">
-          <h1 className="text-3xl font-bold mb-6 text-center">Apply to Join Our Team</h1>
-          <p className="text-white/70 text-center mb-8">Complete the form below to apply for the satellite research project.</p>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="glass-panel p-8 rounded-2xl">
+          <h1 className="text-3xl font-bold text-center mb-4">Apply to Join Our Team</h1>
+          <p className="text-white/70 text-center mb-6">Fill out the form below to apply for our research project.</p>
 
           {/* Netlify Hidden Form */}
-          <form name="application-form" data-netlify="true" netlify-honeypot="bot-field" hidden>
+          <form name="application-form" data-netlify="true" hidden>
             {Object.keys(formState).map((key) => (
               <input key={key} type="text" name={key} />
             ))}
             <input type="file" name="resume" />
           </form>
 
-          <form onSubmit={handleSubmit} name="application-form" method="POST" data-netlify="true" netlify-honeypot="bot-field" encType="multipart/form-data">
+          <form onSubmit={handleSubmit} name="application-form" method="POST" data-netlify="true" encType="multipart/form-data">
             <input type="hidden" name="form-name" value="application-form" />
-            <div className="hidden">
-              <label>Don't fill this out: <input name="bot-field" /></label>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white">Name:</label>
+                <input className="input-field" type="text" name="name" value={formState.name} onChange={handleInputChange} required />
+                {formErrors.name && <p className="text-red-400 text-sm">{formErrors.name}</p>}
+              </div>
+
+              <div>
+                <label className="block text-white">Email:</label>
+                <input className="input-field" type="email" name="email" value={formState.email} onChange={handleInputChange} required />
+                {formErrors.email && <p className="text-red-400 text-sm">{formErrors.email}</p>}
+              </div>
+
+              <div>
+                <label className="block text-white">Phone:</label>
+                <input className="input-field" type="tel" name="phone" value={formState.phone} onChange={handleInputChange} required />
+                {formErrors.phone && <p className="text-red-400 text-sm">{formErrors.phone}</p>}
+              </div>
+
+              <div>
+                <label className="block text-white">Year (Optional):</label>
+                <select className="input-field" name="year" value={formState.year} onChange={handleInputChange}>
+                  <option value="">Select Year</option>
+                  <option value="1st">1st Year</option>
+                  <option value="2nd">2nd Year</option>
+                  <option value="3rd">3rd Year</option>
+                  <option value="4th">4th Year</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-white">Branch (Optional):</label>
+                <input className="input-field" type="text" name="branch" value={formState.branch} onChange={handleInputChange} />
+              </div>
+
+              <div>
+                <label className="block text-white">Resume (Optional):</label>
+                <input className="input-field" type="file" name="resume" onChange={handleFileChange} />
+              </div>
+
+              <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Application"}
+              </button>
             </div>
-
-            <label>Name: <input type="text" name="name" value={formState.name} onChange={handleInputChange} required /></label>
-            <label>Email: <input type="email" name="email" value={formState.email} onChange={handleInputChange} required /></label>
-            <label>Phone: <input type="tel" name="phone" value={formState.phone} onChange={handleInputChange} required /></label>
-
-            <label>Year (Optional):  
-              <select name="year" value={formState.year} onChange={handleInputChange}>
-                <option value="">Select Year</option>
-                <option value="1st">1st Year</option>
-                <option value="2nd">2nd Year</option>
-                <option value="3rd">3rd Year</option>
-                <option value="4th">4th Year</option>
-              </select>
-            </label>
-
-            <label>Branch (Optional):  
-              <input type="text" name="branch" value={formState.branch} onChange={handleInputChange} />
-            </label>
-
-            <label>Resume (Optional): <input type="file" name="resume" onChange={handleFileChange} /></label>
-
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Application"}
-            </button>
           </form>
         </motion.div>
       </div>
