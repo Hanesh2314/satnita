@@ -1,25 +1,34 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Home, AlertTriangle } from "lucide-react";
 
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
+    <div className="page-transition container mx-auto px-6 flex items-center justify-center min-h-[80vh]">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="glass-panel rounded-2xl p-8 md:p-10 max-w-md w-full text-center"
+      >
+        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <AlertTriangle className="text-red-400" size={28} />
+        </div>
+        
         <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
-      </div>
+        <p className="text-xl text-white/80 mb-8">Oops! Page not found</p>
+        
+        <button
+          onClick={() => navigate("/")}
+          className="space-btn flex items-center mx-auto"
+        >
+          <Home size={18} className="mr-2" />
+          Return Home
+        </button>
+      </motion.div>
     </div>
   );
 };
