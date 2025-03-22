@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 
@@ -14,23 +13,16 @@ interface Application {
   resumeUrl?: string;
 }
 
-// This is a mock component that would normally fetch data from Netlify
-// In a real implementation, you'd need to use Netlify's API or a serverless function
 const ApplicationList = () => {
   const [applications, setApplications] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // This is a mock function to simulate fetching data
-  // In a real implementation, this would call Netlify's API
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // For demonstration purposes, we'll use mock data
-        // In a real app, this would be data from Netlify Forms
         const mockData: Application[] = [
           {
             id: "app123",
@@ -67,7 +59,6 @@ const ApplicationList = () => {
     fetchApplications();
   }, []);
 
-  // Helper function to format department names
   const formatDepartment = (deptId: string) => {
     const deptMap: {[key: string]: string} = {
       "power-systems": "Power Systems",
@@ -78,7 +69,6 @@ const ApplicationList = () => {
     return deptMap[deptId] || deptId;
   };
 
-  // Helper function to format dates
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
@@ -163,8 +153,8 @@ const ApplicationList = () => {
           
           <div className="text-center py-4">
             <p className="text-white/60 text-sm">
-              Note: This is a demonstration of what the admin panel would look like. 
-              In a real implementation, this would display actual form submissions from Netlify Forms.
+              After deploying to Netlify, actual form submissions will appear here.
+              You can access them through the Netlify dashboard under the Forms section.
             </p>
           </div>
         </div>

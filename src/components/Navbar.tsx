@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Rocket, Menu, X } from "lucide-react";
+import { Rocket, Menu, X, Shield } from "lucide-react";
 import { useAdmin } from "../contexts/AdminContext";
 
 const Navbar = () => {
@@ -66,23 +65,22 @@ const Navbar = () => {
             >
               Apply Now
             </Link>
+            <Link 
+              to="/admin" 
+              className={`text-sm font-medium flex items-center transition-all duration-300 hover:text-space-accent ${
+                location.pathname === "/admin" ? "text-space-accent" : "text-white/80"
+              }`}
+            >
+              <Shield size={14} className="mr-1" />
+              Admin
+            </Link>
             {isAuthenticated && (
-              <>
-                <Link 
-                  to="/admin" 
-                  className={`text-sm font-medium transition-all duration-300 hover:text-space-accent ${
-                    location.pathname === "/admin" ? "text-space-accent" : "text-white/80"
-                  }`}
-                >
-                  Admin Panel
-                </Link>
-                <button 
-                  onClick={logout}
-                  className="text-sm font-medium text-red-400 transition-all duration-300 hover:text-red-300"
-                >
-                  Logout
-                </button>
-              </>
+              <button 
+                onClick={logout}
+                className="text-sm font-medium text-red-400 transition-all duration-300 hover:text-red-300"
+              >
+                Logout
+              </button>
             )}
           </div>
           
@@ -121,23 +119,22 @@ const Navbar = () => {
             >
               Apply Now
             </Link>
+            <Link 
+              to="/admin" 
+              className={`block text-sm font-medium flex items-center ${
+                location.pathname === "/admin" ? "text-space-accent" : "text-white/80"
+              }`}
+            >
+              <Shield size={14} className="mr-1" />
+              Admin
+            </Link>
             {isAuthenticated && (
-              <>
-                <Link 
-                  to="/admin" 
-                  className={`block text-sm font-medium ${
-                    location.pathname === "/admin" ? "text-space-accent" : "text-white/80"
-                  }`}
-                >
-                  Admin Panel
-                </Link>
-                <button 
-                  onClick={logout}
-                  className="block w-full text-left text-sm font-medium text-red-400"
-                >
-                  Logout
-                </button>
-              </>
+              <button 
+                onClick={logout}
+                className="block w-full text-left text-sm font-medium text-red-400"
+              >
+                Logout
+              </button>
             )}
           </div>
         </div>
