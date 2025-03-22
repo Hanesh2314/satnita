@@ -10,12 +10,22 @@
   to = "/index.html"
   status = 200
 
-# Headers for security and performance
+# Netlify Forms processing (critical for form submissions to work)
 [[headers]]
-  for = "/*"
+  for = "/admin"
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Ensures Netlify properly detects the HTML form
+[[redirects]]
+  from = "/success"
+  to = "/success.html"
+  status = 200
