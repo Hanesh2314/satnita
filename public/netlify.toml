@@ -29,3 +29,10 @@
   from = "/success"
   to = "/success.html"
   status = 200
+
+# 👇 **MOST IMPORTANT: This allows Netlify to process forms correctly**
+[[redirects]]
+  from = "/forms"
+  to = "/forms"
+  status = 200
+  force = true
