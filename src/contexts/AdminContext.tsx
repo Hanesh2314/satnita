@@ -22,7 +22,12 @@ const defaultAboutUs: AboutUs = {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Check if user was previously authenticated
+    const saved = localStorage.getItem("adminAuth");
+    return saved === "true";
+  });
+  
   const [aboutUs, setAboutUs] = useState<AboutUs>(() => {
     const saved = localStorage.getItem("aboutUs");
     return saved ? JSON.parse(saved) : defaultAboutUs;
@@ -31,6 +36,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem("aboutUs", JSON.stringify(aboutUs));
   }, [aboutUs]);
+  
+  useEffect(() => {
+    localStorage.setItem("adminAuth", isAuthenticated ? "true" : "false");
+  }, [isAuthenticated]);
 
   const login = (password: string) => {
     if (password === "KLPD") {

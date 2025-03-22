@@ -1,3 +1,4 @@
+
 # Global settings applied to the whole site
 [build]
   publish = "dist"
@@ -14,13 +15,6 @@
   from = "/success"
   to = "/success.html"
   status = 200
-
-# ✅ MOST IMPORTANT: Allows Netlify to process form submissions
-[[redirects]]
-  from = "/*"
-  to = "/"
-  status = 200
-  force = true
 
 # Security Headers
 [[headers]]

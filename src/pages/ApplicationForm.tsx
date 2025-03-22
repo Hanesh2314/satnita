@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -75,6 +74,12 @@ const ApplicationForm = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const encode = (data: Record<string, string>) => {
+    return Object.keys(data)
+      .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+      .join("&");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -89,34 +94,49 @@ const ApplicationForm = () => {
     
     setIsSubmitting(true);
     
-    // Create form data for Netlify Forms
-    const formData = new FormData();
-    formData.append("form-name", "application-form");
-    Object.entries(formState).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    
-    if (file) {
-      formData.append("resume", file);
-    }
-    
     try {
-      // Submit to Netlify Forms endpoint
-      const response = await fetch("/", {
-        method: "POST",
-        body: formData,
+      // For Netlify Forms without file attachment
+      if (!file) {
+        const formData = {
+          ...formState,
+          "form-name": "application-form",
+        };
+        
+        const response = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: encode(formData),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      } else {
+        // For Netlify Forms with file attachment
+        const formData = new FormData();
+        Object.entries(formState).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        formData.append("form-name", "application-form");
+        formData.append("resume", file);
+        
+        const response = await fetch("/", {
+          method: "POST",
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+      }
+      
+      // Success! Clear form and show toast
+      toast({
+        title: "Application Submitted!",
+        description: "Thank you for your interest in joining our team.",
       });
       
-      if (response.ok) {
-        toast({
-          title: "Application Submitted!",
-          description: "Thank you for your interest in joining our team.",
-          variant: "default"
-        });
-        navigate("/");
-      } else {
-        throw new Error("Network response was not ok");
-      }
+      navigate("/confirmation");
     } catch (error) {
       console.error("Form submission error:", error);
       toast({
@@ -164,7 +184,15 @@ const ApplicationForm = () => {
             <input type="file" name="resume" />
           </form>
           
-          <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
+          <form 
+            onSubmit={handleSubmit} 
+            className="space-y-6" 
+            name="application-form" 
+            method="POST" 
+            data-netlify="true" 
+            netlify-honeypot="bot-field" 
+            encType="multipart/form-data"
+          >
             <input type="hidden" name="form-name" value="application-form" />
             <div className="hidden">
               <label>Don't fill this out if you're human: <input name="bot-field" /></label>

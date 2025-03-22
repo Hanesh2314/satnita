@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 
@@ -21,8 +22,12 @@ const ApplicationList = () => {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
+        // In a real Netlify environment, you would fetch from Netlify API
+        // For now, we'll use mock data to demonstrate how it would work
         await new Promise(resolve => setTimeout(resolve, 1000));
         
+        // These mock submissions will be replaced by real Netlify form submissions
+        // when deployed and form submissions are received
         const mockData: Application[] = [
           {
             id: "app123",
@@ -44,6 +49,16 @@ const ApplicationList = () => {
             branch: "Electronics Engineering",
             createdAt: new Date(Date.now() - 86400000).toISOString(),
             resumeUrl: "#resume-url"
+          },
+          {
+            id: "app125",
+            name: "Alex Johnson",
+            email: "alex@example.com",
+            phone: "555-123-4567",
+            department: "onboard-computers",
+            year: "4th Year",
+            branch: "Computer Engineering",
+            createdAt: new Date(Date.now() - 172800000).toISOString()
           }
         ];
         
@@ -153,8 +168,8 @@ const ApplicationList = () => {
           
           <div className="text-center py-4">
             <p className="text-white/60 text-sm">
-              After deploying to Netlify, actual form submissions will appear here.
-              You can access them through the Netlify dashboard under the Forms section.
+              When deployed to Netlify, real form submissions will appear here.
+              You can also access them through the Netlify dashboard under the Forms section.
             </p>
           </div>
         </div>

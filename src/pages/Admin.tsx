@@ -1,6 +1,5 @@
 
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
 import AdminLogin from "../components/AdminLogin";
@@ -52,7 +51,7 @@ const Admin = () => {
           <TabsContent value="content" className="mt-6">
             <AboutUsEditor />
             
-            <div className="glass-panel rounded-xl p-6">
+            <div className="glass-panel rounded-xl p-6 mt-6">
               <h2 className="text-xl font-bold mb-4">Help & Instructions</h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-white/70 mb-4">
@@ -64,6 +63,10 @@ const Admin = () => {
                   <li>Changes will be immediately visible to all users.</li>
                   <li>Refresh the page if you don't see your changes.</li>
                 </ul>
+                <p className="text-white/70 mt-4">
+                  The Applications tab shows all submissions from the application form.
+                  New submissions will appear automatically after they're submitted.
+                </p>
               </div>
             </div>
           </TabsContent>
