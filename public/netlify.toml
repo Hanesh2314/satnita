@@ -1,4 +1,3 @@
-
 # Global settings applied to the whole site
 [build]
   publish = "dist"
@@ -10,7 +9,20 @@
   to = "/index.html"
   status = 200
 
-# Netlify Forms processing (critical for form submissions to work)
+# Ensures Netlify properly detects HTML form submissions
+[[redirects]]
+  from = "/success"
+  to = "/success.html"
+  status = 200
+
+# ✅ MOST IMPORTANT: Allows Netlify to process form submissions
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+  force = true
+
+# Security Headers
 [[headers]]
   for = "/admin"
   [headers.values]
@@ -24,15 +36,8 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
-# Ensures Netlify properly detects the HTML form
-[[redirects]]
-  from = "/success"
-  to = "/success.html"
-  status = 200
-
-# 👇 **MOST IMPORTANT: This allows Netlify to process forms correctly**
-[[redirects]]
-  from = "/forms"
-  to = "/forms"
-  status = 200
-  force = true
+# ✅ Ensures Netlify detects form submissions
+[[headers]]
+  for = "/"
+  [headers.values]
+    Content-Type = "text/html; charset=UTF-8"
