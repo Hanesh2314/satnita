@@ -20,7 +20,7 @@ const ApplicationForm = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
-  const [submitted, setSubmitted] = useState(false); // Track submission
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (departmentId) {
@@ -53,10 +53,6 @@ const ApplicationForm = () => {
     }
   };
 
-  const clearFile = () => {
-    setFile(null);
-  };
-
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
 
@@ -67,18 +63,9 @@ const ApplicationForm = () => {
       errors.email = "Email is invalid";
     }
     if (!formState.phone.trim()) errors.phone = "Phone is required";
-    if (!formState.department) errors.department = "Department is required";
-    if (!formState.year) errors.year = "Year is required";
-    if (!formState.branch.trim()) errors.branch = "Branch is required";
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
-  };
-
-  const encode = (data: Record<string, string>) => {
-    return Object.keys(data)
-      .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
-      .join("&");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,14 +99,14 @@ const ApplicationForm = () => {
         throw new Error("Network response was not ok");
       }
 
-      setSubmitted(true); // Set form as submitted
+      setSubmitted(true);
 
       toast({
         title: "Application Submitted!",
         description: "Thank you for your interest in joining our team.",
       });
 
-      setTimeout(() => navigate("/"), 3000); // Redirect after 3 seconds
+      setTimeout(() => navigate("/"), 3000);
     } catch (error) {
       console.error("Form submission error:", error);
       toast({
@@ -173,6 +160,21 @@ const ApplicationForm = () => {
             <label>Name: <input type="text" name="name" value={formState.name} onChange={handleInputChange} required /></label>
             <label>Email: <input type="email" name="email" value={formState.email} onChange={handleInputChange} required /></label>
             <label>Phone: <input type="tel" name="phone" value={formState.phone} onChange={handleInputChange} required /></label>
+
+            <label>Year (Optional):  
+              <select name="year" value={formState.year} onChange={handleInputChange}>
+                <option value="">Select Year</option>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+              </select>
+            </label>
+
+            <label>Branch (Optional):  
+              <input type="text" name="branch" value={formState.branch} onChange={handleInputChange} />
+            </label>
+
             <label>Resume (Optional): <input type="file" name="resume" onChange={handleFileChange} /></label>
 
             <button type="submit" disabled={isSubmitting}>
