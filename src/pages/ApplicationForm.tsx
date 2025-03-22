@@ -118,25 +118,25 @@ const ApplicationForm = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-white">Name:</label>
-                <input className="input-field" type="text" name="name" value={formState.name} onChange={handleInputChange} required />
+                <input className="input-field text-black bg-white p-2 rounded-md w-full" type="text" name="name" value={formState.name} onChange={handleInputChange} required />
                 {formErrors.name && <p className="text-red-400 text-sm">{formErrors.name}</p>}
               </div>
 
               <div>
                 <label className="block text-white">Email:</label>
-                <input className="input-field" type="email" name="email" value={formState.email} onChange={handleInputChange} required />
+                <input className="input-field text-black bg-white p-2 rounded-md w-full" type="email" name="email" value={formState.email} onChange={handleInputChange} required />
                 {formErrors.email && <p className="text-red-400 text-sm">{formErrors.email}</p>}
               </div>
 
               <div>
                 <label className="block text-white">Phone:</label>
-                <input className="input-field" type="tel" name="phone" value={formState.phone} onChange={handleInputChange} required />
+                <input className="input-field text-black bg-white p-2 rounded-md w-full" type="tel" name="phone" value={formState.phone} onChange={handleInputChange} required />
                 {formErrors.phone && <p className="text-red-400 text-sm">{formErrors.phone}</p>}
               </div>
 
               <div>
                 <label className="block text-white">Year (Optional):</label>
-                <select className="input-field" name="year" value={formState.year} onChange={handleInputChange}>
+                <select className="input-field text-black bg-white p-2 rounded-md w-full" name="year" value={formState.year} onChange={handleInputChange}>
                   <option value="">Select Year</option>
                   <option value="1st">1st Year</option>
                   <option value="2nd">2nd Year</option>
@@ -147,15 +147,15 @@ const ApplicationForm = () => {
 
               <div>
                 <label className="block text-white">Branch (Optional):</label>
-                <input className="input-field" type="text" name="branch" value={formState.branch} onChange={handleInputChange} />
+                <input className="input-field text-black bg-white p-2 rounded-md w-full" type="text" name="branch" value={formState.branch} onChange={handleInputChange} />
               </div>
 
               <div>
                 <label className="block text-white">Resume (Optional):</label>
-                <input className="input-field" type="file" name="resume" onChange={handleFileChange} />
+                <input className="input-field text-black bg-white p-2 rounded-md w-full" type="file" name="resume" onChange={handleFileChange} />
               </div>
 
-              <button className="btn-primary w-full" type="submit" disabled={isSubmitting}>
+              <button className="btn-primary w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Application"}
               </button>
             </div>
