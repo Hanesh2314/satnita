@@ -1,0 +1,43 @@
+# Global settings applied to the whole site
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Redirects for SPA (Single Page Application)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Ensures Netlify properly detects HTML form submissions
+[[redirects]]
+  from = "/success"
+  to = "/success.html"
+  status = 200
+
+# ✅ MOST IMPORTANT: Allows Netlify to process form submissions
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+  force = true
+
+# Security Headers
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# ✅ Ensures Netlify detects form submissions
+[[headers]]
+  for = "/"
+  [headers.values]
+    Content-Type = "text/html; charset=UTF-8"
