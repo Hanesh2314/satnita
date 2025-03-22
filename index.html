@@ -21,11 +21,11 @@
     <div id="root"></div>
     
     <!-- ✅ Hidden form for Netlify detection -->
-    <form name="cosmic-portal" netlify netlify-honeypot="bot-field" hidden>
-      <input type="text" name="name" />
-      <input type="email" name="email" />
-      <textarea name="message"></textarea>
-    </form>
+<form hidden method="post" name="cosmic-portal">
+    <input type="hidden" name="name" value="default">
+    <input type="hidden" name="email" value="default@example.com">
+    <textarea name="message" hidden>default</textarea>
+</form>
 
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
