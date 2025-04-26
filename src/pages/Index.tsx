@@ -14,9 +14,9 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  const satelliteX = useTransform(scrollYProgress, [0, 0.3], ["-50%", "150%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 0.3], ["30%", "-30%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 0.3], [0, 35]);
+  const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["-50%", "150%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.2], ["30%", "-30%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.2], [0, 35]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -61,7 +61,7 @@ const Index = () => {
           </div>
           
           <motion.div
-            className="absolute w-40 h-40 top-0 left-0"
+            className="absolute w-48 h-48 top-1/2 left-0 -translate-y-1/2"
             style={{
               x: satelliteX,
               y: satelliteY,
@@ -71,7 +71,7 @@ const Index = () => {
             <img
               src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
               alt="Satellite"
-              className="w-full h-full object-contain hover:scale-110 transition-transform duration-300"
+              className="w-full h-full object-contain"
             />
           </motion.div>
         </motion.div>
