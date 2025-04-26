@@ -1,6 +1,5 @@
-
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Rocket, Orbit } from "lucide-react";
+import { ArrowRight, Orbit } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
 import { useRef } from "react";
@@ -15,9 +14,9 @@ const Index = () => {
     offset: ["start end", "end start"]
   });
   
-  const satelliteX = useTransform(scrollYProgress, [0, 0.5], ["-100%", "100%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 0.5], ["50%", "0%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 0.5], [0, 20]);
+  const satelliteX = useTransform(scrollYProgress, [0, 1], ["-100%", "200%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 1], ["50%", "-50%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 1], [0, 45]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -51,27 +50,32 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="mt-16 relative w-full max-w-2xl"
+          className="mt-16 relative w-full max-w-4xl mx-auto"
         >
-          <div className="aspect-video rounded-lg overflow-hidden shadow-2xl animate-float">
+          <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
             <img 
               src="/lovable-uploads/189537bf-6ce2-48bc-875c-58f1362e4af7.png" 
               alt="Earth from space" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transform scale-125"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
           </div>
           
-          <motion.img
-            src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
-            alt="Satellite"
-            className="absolute w-24 h-24 object-contain"
+          <motion.div
+            className="absolute w-32 h-32 top-0 left-0"
             style={{
               x: satelliteX,
               y: satelliteY,
               rotate: satelliteRotate
             }}
-          />
+          >
+            <motion.img
+              src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
+              alt="Satellite"
+              className="w-full h-full object-contain hover:scale-110 transition-transform duration-300"
+              whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 10px rgba(0, 210, 255, 0.7))" }}
+            />
+          </motion.div>
         </motion.div>
       </section>
       
