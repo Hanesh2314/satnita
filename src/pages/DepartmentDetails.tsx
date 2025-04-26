@@ -136,7 +136,7 @@ const DepartmentDetails = () => {
         >
           <div className="flex flex-col md:flex-row md:items-center mb-8">
             <div className="bg-space-accent/20 p-5 rounded-xl text-space-accent mb-6 md:mb-0 md:mr-8 w-16 h-16 flex items-center justify-center">
-              {iconMap[department.icon]}
+              {iconMap[department.icon] || <Zap size={32} />}
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">{department.name}</h1>
