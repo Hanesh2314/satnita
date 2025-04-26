@@ -30,7 +30,14 @@ const DepartmentDetails = () => {
     "compass": <Compass size={32} />
   };
 
-  const subsystemContent = {
+  const subsystemContent: {
+    [key: string]: {
+      quote: string;
+      description: string;
+      responsibilities: string[];
+      closing: string;
+    }
+  } = {
     'power-systems': {
       quote: '"Powering possibilities — one solar cell at a time."',
       description: 'The Power System takes care of energy generation, storage, and distribution onboard. With tight constraints on space, weight, and exposure, the system must be smart, efficient, and failsafe.',
@@ -76,11 +83,39 @@ const DepartmentDetails = () => {
         'Kalman filtering and sensor fusion'
       ],
       closing: 'It\'s rocket science — and we\'re building it from scratch.'
+    },
+    'payload': {
+      quote: '"The soul of the satellite: what it sees, it shares."',
+      description: 'This is the scientific heart of our mission. The Payload team is developing instruments capable of detecting trace amounts of SO₂ and NO₂ from orbit.',
+      responsibilities: [
+        'Selecting and integrating UV/VIS spectrometers or gas sensors',
+        'Calibrating sensors for Earth observation conditions',
+        'Designing mechanical mounts and thermal controls for instruments',
+        'Coordinating with the Data Processing Division'
+      ],
+      closing: 'This is where engineering meets environmental science — to protect the air we breathe.'
+    },
+    'data-processing': {
+      quote: '"Turning pixels and numbers into knowledge."',
+      description: 'Raw data from space means nothing unless it\'s processed, corrected, and interpreted.',
+      responsibilities: [
+        'Spectral data calibration and preprocessing',
+        'Atmospheric correction algorithms',
+        'Gas concentration retrieval (e.g., DOAS techniques)',
+        'Data visualization and heatmap generation',
+        'Long-term data archiving and sharing'
+      ],
+      closing: 'It\'s a fusion of space science, data engineering, and machine learning — and it fuels the story our satellite tells.'
     }
   };
 
-  // Get content for this specific subsystem
-  const content = subsystemContent[department.id as keyof typeof subsystemContent];
+  // Get content for this specific subsystem, or use a fallback if not found
+  const content = subsystemContent[department.id] || {
+    quote: "Innovation in space exploration.",
+    description: department.description,
+    responsibilities: department.skills,
+    closing: "Join us in pushing the boundaries of what's possible in satellite technology."
+  };
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16">
