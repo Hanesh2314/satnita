@@ -6,17 +6,45 @@ interface AboutUs {
   content: string;
 }
 
+interface ContactInfo {
+  contact1: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  contact2: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+}
+
 interface AdminContextType {
   isAuthenticated: boolean;
   login: (password: string) => boolean;
   logout: () => void;
   aboutUs: AboutUs;
   updateAboutUs: (newAboutUs: AboutUs) => void;
+  contactInfo: ContactInfo;
+  updateContactInfo: (newContactInfo: ContactInfo) => void;
 }
 
 const defaultAboutUs: AboutUs = {
-  title: "Satellite Research Project",
-  content: "Our research satellite project aims to develop cutting-edge space technology for Earth observation and scientific research. We're a team of passionate students working to design, build, and eventually launch our own satellite. Join us in this exciting journey to explore the frontiers of space technology and make a meaningful contribution to space science."
+  title: "Student Satellite Program",
+  content: "Our student satellite project brings together passionate engineering students to build a fully functional nanosatellite. We're focused on environmental monitoring through cutting-edge technology while providing hands-on experience in space systems engineering."
+};
+
+const defaultContactInfo: ContactInfo = {
+  contact1: {
+    name: "Yashasvi Kumar",
+    phone: "9142316400",
+    email: "ykuo2021@gmail.com"
+  },
+  contact2: {
+    name: "Hanesh Sharma",
+    phone: "7876135821",
+    email: "haneshsharma23@gmail.com"
+  }
 };
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -33,9 +61,18 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     return saved ? JSON.parse(saved) : defaultAboutUs;
   });
 
+  const [contactInfo, setContactInfo] = useState<ContactInfo>(() => {
+    const saved = localStorage.getItem("contactInfo");
+    return saved ? JSON.parse(saved) : defaultContactInfo;
+  });
+
   useEffect(() => {
     localStorage.setItem("aboutUs", JSON.stringify(aboutUs));
   }, [aboutUs]);
+  
+  useEffect(() => {
+    localStorage.setItem("contactInfo", JSON.stringify(contactInfo));
+  }, [contactInfo]);
   
   useEffect(() => {
     localStorage.setItem("adminAuth", isAuthenticated ? "true" : "false");
@@ -57,6 +94,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     setAboutUs(newAboutUs);
   };
 
+  const updateContactInfo = (newContactInfo: ContactInfo) => {
+    setContactInfo(newContactInfo);
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -64,7 +105,9 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
         login,
         logout,
         aboutUs,
-        updateAboutUs
+        updateAboutUs,
+        contactInfo,
+        updateContactInfo
       }}
     >
       {children}

@@ -28,10 +28,10 @@ const DepartmentSelection = () => {
           className="text-center mb-16"
         >
           <h1 className="text-3xl md:text-5xl font-bold mb-6">
-            Choose Your <span className="text-space-accent">Department</span>
+            Our <span className="text-space-accent">Subsystems</span>
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Select the department that aligns with your interests and skills. Each team plays a crucial role in our satellite's success.
+            Each subsystem plays a crucial role in our satellite's success. Learn more about the specialized teams working on this project.
           </p>
         </motion.div>
 
@@ -62,19 +62,6 @@ const DepartmentSelection = () => {
                       {department.description}
                     </p>
                   </div>
-                </div>
-                
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {department.skills.slice(0, 2).map((skill, idx) => (
-                    <span key={idx} className="bg-white/10 text-white/80 text-xs px-3 py-1 rounded-full">
-                      {skill}
-                    </span>
-                  ))}
-                  {department.skills.length > 2 && (
-                    <span className="bg-white/5 text-white/60 text-xs px-3 py-1 rounded-full">
-                      +{department.skills.length - 2} more
-                    </span>
-                  )}
                 </div>
                 
                 <div className="mt-6 flex justify-end">

@@ -1,21 +1,28 @@
 
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Rocket, Users, Brain, Orbit } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowRight, Rocket, Orbit } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
+import { useRef } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
   const { aboutUs } = useAdmin();
-
-  const handleJoinClick = () => {
-    navigate("/confirmation");
-  };
+  const containerRef = useRef(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const satelliteX = useTransform(scrollYProgress, [0, 0.5], ["-100%", "100%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.5], ["50%", "0%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.5], [0, 20]);
 
   return (
-    <div className="page-transition container mx-auto px-6 pt-12 pb-16">
+    <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
       {/* Hero Section */}
-      <section className="min-h-[70vh] flex flex-col justify-center items-center text-center mb-24">
+      <section className="min-h-[70vh] flex flex-col justify-center items-center text-center mb-24 relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -23,19 +30,19 @@ const Index = () => {
           className="max-w-4xl mx-auto"
         >
           <h1 className="text-4xl md:text-6xl font-bold mb-6 satellite-title">
-            {aboutUs.title}
+            Student Satellite Program
           </h1>
           <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed">
-            Embark on a journey to the stars with our cutting-edge satellite research team.
+            Embark on a journey to the stars with our passionate satellite research team.
           </p>
           
           <motion.button
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(0, 210, 255, 0.7)" }}
             whileTap={{ scale: 0.95 }}
             className="space-btn flex items-center mx-auto group"
-            onClick={handleJoinClick}
+            onClick={() => navigate('/departments')}
           >
-            Join the Team
+            SUBSYSTEMS
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
           </motion.button>
         </motion.div>
@@ -48,63 +55,53 @@ const Index = () => {
         >
           <div className="aspect-video rounded-lg overflow-hidden shadow-2xl animate-float">
             <img 
-              src="https://images.unsplash.com/photo-1502134249126-9f3755a50d78?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
-              alt="Satellite in orbit" 
+              src="/lovable-uploads/189537bf-6ce2-48bc-875c-58f1362e4af7.png" 
+              alt="Earth from space" 
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
           </div>
-          <div className="absolute -bottom-5 -right-5 bg-space-blue/40 backdrop-blur-md p-3 rounded-md border border-white/10 text-space-accent text-sm font-mono animate-pulse-glow">
-            SatelliteX Research Initiative
-          </div>
+          
+          <motion.img
+            src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
+            alt="Satellite"
+            className="absolute w-24 h-24 object-contain"
+            style={{
+              x: satelliteX,
+              y: satelliteY,
+              rotate: satelliteRotate
+            }}
+          />
         </motion.div>
       </section>
       
       {/* About Section */}
       <section className="mb-24">
         <div className="glass-panel rounded-2xl p-8 md:p-12 max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6 text-space-accent">About Our Mission</h2>
+          <h2 className="text-3xl font-bold mb-6 text-space-accent">Impact Snapshot</h2>
           <div className="prose prose-invert max-w-none">
             <p className="text-white/90 leading-relaxed mb-6">
-              {aboutUs.content}
+              Overview: India is facing an acute air pollution crisis, with NO₂ and SO₂ emerging as key contributors to poor urban air quality, respiratory illnesses, and environmental degradation. While ground-based monitoring is limited and sparse, satellite-based tracking offers a scalable, unbiased, and high-resolution method to observe pollutant distributions across urban and industrial regions. This nanosatellite mission aims to fill critical data gaps and support national environmental, health, and policy goals.
             </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10 transition-all duration-300 hover:bg-white/10">
-              <Rocket className="text-space-accent mb-4" size={24} />
-              <h3 className="text-xl font-bold mb-2">Innovation</h3>
-              <p className="text-white/70 text-sm">Pushing the boundaries of what's possible in satellite technology.</p>
-            </div>
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10 transition-all duration-300 hover:bg-white/10">
-              <Users className="text-space-accent mb-4" size={24} />
-              <h3 className="text-xl font-bold mb-2">Collaboration</h3>
-              <p className="text-white/70 text-sm">Working together across disciplines to achieve our mission.</p>
-            </div>
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10 transition-all duration-300 hover:bg-white/10">
-              <Brain className="text-space-accent mb-4" size={24} />
-              <h3 className="text-xl font-bold mb-2">Learning</h3>
-              <p className="text-white/70 text-sm">Developing skills and knowledge through hands-on experience.</p>
-            </div>
+            <h3 className="text-xl text-white/90 font-bold mt-6 mb-3">Key Mission Goals:</h3>
+            <ul className="list-disc pl-5 space-y-2 text-white/80">
+              <li>Detect and quantify atmospheric NO₂ and SO₂ concentrations using UV-Vis spectrometry.</li>
+              <li>Provide daily observations of key urban centers and industrial clusters.</li>
+              <li>Enable early detection of pollution spikes and trends over time.</li>
+              <li>Support public health and environmental regulatory decisions through open-access data.</li>
+            </ul>
           </div>
         </div>
       </section>
       
-      {/* Call to Action */}
+      {/* About Us Section */}
       <section className="max-w-4xl mx-auto text-center">
         <div className="bg-gradient-to-r from-space-blue/20 to-space-accent/20 rounded-2xl p-8 md:p-12 border border-white/10">
           <Orbit className="mx-auto text-space-accent mb-6 animate-rotate-slow" size={48} />
-          <h2 className="text-3xl font-bold mb-4">Ready to Join Our Mission?</h2>
-          <p className="text-white/80 mb-8 max-w-xl mx-auto">
-            We're looking for passionate individuals to help us reach for the stars.
-            No prior experience needed - just enthusiasm and a willingness to learn.
-          </p>
-          <button 
-            className="space-btn"
-            onClick={handleJoinClick}
-          >
-            Start Your Journey
-          </button>
+          <h2 className="text-3xl font-bold mb-4">About Us</h2>
+          <div className="text-white/80 mb-8 max-w-xl mx-auto prose prose-invert">
+            <p>{aboutUs.content}</p>
+          </div>
         </div>
       </section>
     </div>

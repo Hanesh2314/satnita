@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Rocket, Menu, X, Shield } from "lucide-react";
@@ -33,16 +34,20 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:justify-start">
           <Link 
             to="/" 
             className="flex items-center space-x-2 text-white transition-transform hover:scale-105"
           >
-            <Rocket size={24} className="text-space-accent animate-pulse-glow" />
-            <span className="text-xl font-bold tracking-tight">SatelliteX</span>
+            <img 
+              src="/lovable-uploads/2a2d317d-1e3e-4404-90d2-0ae15b71193a.png" 
+              alt="Kshitiz Logo" 
+              className="w-8 h-8" 
+            />
+            <span className="text-xl font-bold tracking-tight">Kshitiz</span>
           </Link>
           
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center justify-center space-x-8 mx-auto">
             <Link 
               to="/" 
               className={`text-sm font-medium transition-all duration-300 hover:text-space-accent ${
@@ -57,13 +62,7 @@ const Navbar = () => {
                 location.pathname === "/departments" ? "text-space-accent" : "text-white/80"
               }`}
             >
-              Departments
-            </Link>
-            <Link 
-              to="/apply" 
-              className="space-btn text-sm"
-            >
-              Apply Now
+              Subsystems
             </Link>
             <Link 
               to="/admin" 
@@ -85,7 +84,7 @@ const Navbar = () => {
           </div>
           
           <button 
-            className="md:hidden text-white focus:outline-none"
+            className="md:hidden text-white focus:outline-none ml-auto"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -111,13 +110,7 @@ const Navbar = () => {
                 location.pathname === "/departments" ? "text-space-accent" : "text-white/80"
               }`}
             >
-              Departments
-            </Link>
-            <Link 
-              to="/apply" 
-              className="block space-btn text-sm text-center"
-            >
-              Apply Now
+              Subsystems
             </Link>
             <Link 
               to="/admin" 

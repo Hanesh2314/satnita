@@ -1,7 +1,7 @@
 
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Zap, Radio, Cpu, Compass } from "lucide-react";
+import { ArrowLeft, Zap, Radio, Cpu, Compass } from "lucide-react";
 import { getDepartmentById } from "../data/departments";
 
 const DepartmentDetails = () => {
@@ -12,12 +12,12 @@ const DepartmentDetails = () => {
   if (!department) {
     return (
       <div className="container mx-auto px-6 py-12 text-center">
-        <h1 className="text-3xl font-bold mb-4">Department Not Found</h1>
+        <h1 className="text-3xl font-bold mb-4">Subsystem Not Found</h1>
         <button 
           className="space-btn-secondary"
           onClick={() => navigate("/departments")}
         >
-          Back to Departments
+          Back to Subsystems
         </button>
       </div>
     );
@@ -30,6 +30,58 @@ const DepartmentDetails = () => {
     "compass": <Compass size={32} />
   };
 
+  const subsystemContent = {
+    'power-systems': {
+      quote: '"Powering possibilities — one solar cell at a time."',
+      description: 'The Power System takes care of energy generation, storage, and distribution onboard. With tight constraints on space, weight, and exposure, the system must be smart, efficient, and failsafe.',
+      responsibilities: [
+        'Solar panel configuration and deployment',
+        'Battery management systems (BMS)',
+        'Power conditioning and conversion',
+        'Load regulation and protection circuitry'
+      ],
+      closing: 'It\'s more than just turning the satellite "on" — it\'s about keeping it alive and balanced, 24/7.'
+    },
+    'communication-systems': {
+      quote: '"What good is a satellite if it can\'t speak to Earth?"',
+      description: 'The Communication Subsystem ensures real-time, two-way transmission between the satellite and our ground station.',
+      responsibilities: [
+        'Antenna design and orientation',
+        'RF link budget analysis',
+        'UHF/VHF/S-band transceivers',
+        'Signal modulation and error correction',
+        'Ground station interfacing'
+      ],
+      closing: 'The goal? Seamless communication that never drops a beat — even from hundreds of kilometers above.'
+    },
+    'onboard-computers': {
+      quote: '"The central nervous system of the satellite."',
+      description: 'The OBC manages and controls all onboard functions — from subsystem coordination to data handling and fault detection.',
+      responsibilities: [
+        'Selecting space-tolerant microcontrollers or SoCs',
+        'Real-time OS setup and software architecture',
+        'Writing and testing control algorithms',
+        'Ensuring redundancy and reliability',
+        'Managing memory, health monitoring, and system resets'
+      ],
+      closing: 'It\'s the code that holds the mission together — in orbit, there are no second chances.'
+    },
+    'attitude-determination-control': {
+      quote: '"In space, knowing where you are — and where you\'re facing — is everything."',
+      description: 'The GNC subsystem handles the satellite\'s orientation and trajectory in orbit. It combines hardware and algorithms to ensure our satellite stays pointed at the right target, at the right time.',
+      responsibilities: [
+        'Attitude determination using sun sensors, gyros, magnetometers',
+        'Attitude control using reaction wheels and magnetorquers',
+        'Orbit propagation and maneuver simulation',
+        'Kalman filtering and sensor fusion'
+      ],
+      closing: 'It\'s rocket science — and we\'re building it from scratch.'
+    }
+  };
+
+  // Get content for this specific subsystem
+  const content = subsystemContent[department.id as keyof typeof subsystemContent];
+
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16">
       <div className="max-w-4xl mx-auto">
@@ -38,7 +90,7 @@ const DepartmentDetails = () => {
           onClick={() => navigate("/departments")}
         >
           <ArrowLeft size={18} className="mr-2" />
-          Back to Departments
+          Back to Subsystems
         </button>
         
         <motion.div
@@ -57,58 +109,26 @@ const DepartmentDetails = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-            <div>
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <span className="text-space-accent mr-2">Required Skills</span>
-              </h2>
-              <ul className="space-y-3">
-                {department.skills.map((skill, index) => (
-                  <motion.li 
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex items-start"
-                  >
-                    <CheckCircle2 size={18} className="text-space-accent mt-0.5 mr-3 flex-shrink-0" />
-                    <span className="text-white/80">{skill}</span>
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
+          <div className="mb-10">
+            <blockquote className="border-l-4 border-space-accent pl-4 italic text-white/90 text-xl mb-6">
+              {content.quote}
+            </blockquote>
             
-            <div>
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <span className="text-space-accent mr-2">Required Knowledge</span>
-              </h2>
-              <ul className="space-y-3">
-                {department.knowledge.map((knowledge, index) => (
-                  <motion.li 
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + index * 0.1 }}
-                    className="flex items-start"
-                  >
-                    <CheckCircle2 size={18} className="text-space-accent mt-0.5 mr-3 flex-shrink-0" />
-                    <span className="text-white/80">{knowledge}</span>
-                  </motion.li>
+            <div className="prose prose-invert max-w-none">
+              <p className="text-white/90 mb-6">{content.description}</p>
+              
+              <h2 className="text-xl font-bold mb-4 text-space-accent">The team is involved in:</h2>
+              <ul className="list-disc pl-5 space-y-2 mb-6">
+                {content.responsibilities.map((item, i) => (
+                  <li key={i} className="text-white/80">{item}</li>
                 ))}
               </ul>
+              
+              <p className="text-white/90 mt-6">{content.closing}</p>
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="space-btn"
-              onClick={() => navigate(`/apply/${department.id}`)}
-            >
-              Proceed to Apply
-            </motion.button>
-            
+          <div className="flex justify-center">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

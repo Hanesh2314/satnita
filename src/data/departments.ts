@@ -11,24 +11,24 @@ export interface Department {
 const departments: Department[] = [
   {
     id: "power-systems",
-    name: "Power Systems",
-    description: "Design and implement the power generation, storage, and distribution systems for the satellite.",
+    name: "Power System",
+    description: "The foundation that provides energy to all satellite components through solar collection, storage, and distribution.",
     icon: "zap",
     skills: [
-      "Basic Electrical Engineering",
+      "Electrical Engineering",
       "Circuit Design",
       "Battery Management"
     ],
     knowledge: [
       "Power Distribution",
-      "Energy Storage (Sodium-ion Batteries)",
+      "Energy Storage",
       "Solar Panels"
     ]
   },
   {
     id: "communication-systems",
-    name: "Communication Systems",
-    description: "Develop the satellite's communications infrastructure for data transmission to and from Earth.",
+    name: "Communication Subsystem",
+    description: "Enables the satellite to transmit and receive data between space and Earth ground stations.",
     icon: "radio",
     skills: [
       "RF Engineering",
@@ -43,8 +43,8 @@ const departments: Department[] = [
   },
   {
     id: "onboard-computers",
-    name: "Onboard Computers",
-    description: "Create the software and hardware systems that control the satellite's operations.",
+    name: "On-Board Computers",
+    description: "The central nervous system that controls all satellite operations and processes data.",
     icon: "cpu",
     skills: [
       "Embedded Systems",
@@ -54,23 +54,55 @@ const departments: Department[] = [
     knowledge: [
       "Microcontrollers",
       "Real-Time OS",
-      "Satellite Data Handling"
+      "Data Handling"
     ]
   },
   {
     id: "attitude-determination-control",
-    name: "Attitude Determination & Control",
-    description: "Design systems that control the satellite's orientation and stability in orbit.",
+    name: "GNC (Guidance, Navigation & Control)",
+    description: "Manages the satellite's orientation and position in orbit to maintain stability and pointing accuracy.",
     icon: "compass",
     skills: [
       "Control Systems",
       "MATLAB/Simulink",
-      "Gyroscopes"
+      "Attitude Determination"
     ],
     knowledge: [
       "Reaction Wheels",
       "Orbital Mechanics",
-      "Satellite Orientation Control"
+      "Orientation Control"
+    ]
+  },
+  {
+    id: "payload",
+    name: "Payload Subsystem",
+    description: "The scientific heart of our mission focused on pollution detection and monitoring from orbit.",
+    icon: "zap",
+    skills: [
+      "Sensor Integration",
+      "Environmental Science",
+      "Optical Systems"
+    ],
+    knowledge: [
+      "Spectrometry",
+      "Gas Detection",
+      "Instrument Calibration"
+    ]
+  },
+  {
+    id: "data-processing",
+    name: "Payload Data Processing",
+    description: "Transforms raw satellite data into meaningful environmental insights and visualizations.",
+    icon: "cpu",
+    skills: [
+      "Data Analysis",
+      "Algorithm Development", 
+      "Machine Learning"
+    ],
+    knowledge: [
+      "Atmospheric Models",
+      "Image Processing",
+      "Data Visualization"
     ]
   }
 ];
