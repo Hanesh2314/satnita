@@ -11,17 +11,16 @@ const Index = () => {
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ["start start", "end end"]
   });
   
-  const satelliteX = useTransform(scrollYProgress, [0, 1], ["-100%", "200%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 1], ["50%", "-50%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 1], [0, 45]);
+  const satelliteX = useTransform(scrollYProgress, [0, 0.7], ["-50%", "150%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.7], ["30%", "-30%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.7], [0, 35]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
-      {/* Hero Section */}
-      <section className="min-h-[70vh] flex flex-col justify-center items-center text-center mb-24 relative overflow-hidden">
+      <section className="min-h-[80vh] flex flex-col justify-center items-center text-center mb-24 relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,36 +49,34 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="mt-16 relative w-full max-w-4xl mx-auto"
+          className="mt-16 relative w-full max-w-[90vw] mx-auto"
         >
-          <div className="aspect-video rounded-lg overflow-hidden shadow-2xl">
+          <div className="aspect-[16/9] rounded-lg overflow-hidden shadow-2xl">
             <img 
               src="/lovable-uploads/189537bf-6ce2-48bc-875c-58f1362e4af7.png" 
               alt="Earth from space" 
-              className="w-full h-full object-cover transform scale-125"
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
           </div>
           
           <motion.div
-            className="absolute w-32 h-32 top-0 left-0"
+            className="absolute w-28 h-28 top-0 left-0"
             style={{
               x: satelliteX,
               y: satelliteY,
               rotate: satelliteRotate
             }}
           >
-            <motion.img
+            <img
               src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
               alt="Satellite"
               className="w-full h-full object-contain hover:scale-110 transition-transform duration-300"
-              whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 10px rgba(0, 210, 255, 0.7))" }}
             />
           </motion.div>
         </motion.div>
       </section>
       
-      {/* About Section */}
       <section className="mb-24">
         <div className="glass-panel rounded-2xl p-8 md:p-12 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold mb-6 text-space-accent">Impact Snapshot</h2>
@@ -98,7 +95,6 @@ const Index = () => {
         </div>
       </section>
       
-      {/* About Us Section */}
       <section className="max-w-4xl mx-auto text-center">
         <div className="bg-gradient-to-r from-space-blue/20 to-space-accent/20 rounded-2xl p-8 md:p-12 border border-white/10">
           <Orbit className="mx-auto text-space-accent mb-6 animate-rotate-slow" size={48} />
