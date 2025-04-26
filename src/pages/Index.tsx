@@ -11,12 +11,12 @@ const Index = () => {
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end end"]
+    offset: ["start start", "end start"]
   });
   
-  const satelliteX = useTransform(scrollYProgress, [0, 0.7], ["-50%", "150%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 0.7], ["30%", "-30%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 0.7], [0, 35]);
+  const satelliteX = useTransform(scrollYProgress, [0, 0.3], ["-50%", "150%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.3], ["30%", "-30%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.3], [0, 35]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -49,19 +49,19 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="mt-16 relative w-full max-w-[90vw] mx-auto"
+          className="mt-16 relative w-full max-w-[95vw] mx-auto"
         >
           <div className="aspect-[16/9] rounded-lg overflow-hidden shadow-2xl">
             <img 
               src="/lovable-uploads/189537bf-6ce2-48bc-875c-58f1362e4af7.png" 
               alt="Earth from space" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover scale-125"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
           </div>
           
           <motion.div
-            className="absolute w-28 h-28 top-0 left-0"
+            className="absolute w-40 h-40 top-0 left-0"
             style={{
               x: satelliteX,
               y: satelliteY,
