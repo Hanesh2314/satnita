@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -14,9 +15,10 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  const satelliteX = useTransform(scrollYProgress, [0, 0.15], ["-100%", "200%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 0.15], ["50%", "50%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 0.15], [0, 45]);
+  // Updated transform to move horizontally from left to right
+  const satelliteX = useTransform(scrollYProgress, [0, 0.3], ["-20%", "120%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.3], ["50%", "50%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.3], [0, 0]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -85,7 +87,7 @@ const Index = () => {
           </div>
           
           <motion.div
-            className="absolute w-56 h-56 top-1/2 left-0 -translate-y-1/2"
+            className="absolute w-64 h-64 top-1/2 -translate-y-1/2"
             style={{
               x: satelliteX,
               y: satelliteY,
@@ -93,10 +95,9 @@ const Index = () => {
             }}
           >
             <img
-              src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
+              src="/lovable-uploads/9566fbfb-c4ff-4c1e-b094-98b9afc46a7b.png"
               alt="Satellite"
               className="w-full h-full object-contain"
-              style={{ filter: "drop-shadow(2px 2px 5px rgba(0,0,0,0.3))" }}
             />
           </motion.div>
         </motion.div>
