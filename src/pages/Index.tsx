@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Orbit } from "lucide-react";
+import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
 import { useRef } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { aboutUs } = useAdmin();
+  const { aboutUs, bulletinInfo } = useAdmin();
   const containerRef = useRef(null);
   
   const { scrollYProgress } = useScroll({
@@ -14,12 +14,36 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["-50%", "150%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 0.2], ["30%", "-30%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 0.2], [0, 35]);
+  const satelliteX = useTransform(scrollYProgress, [0, 0.15], ["-100%", "200%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.15], ["50%", "50%"]);
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.15], [0, 45]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
+      {/* Information Bulletin */}
+      <div className="relative mb-6 overflow-hidden bg-gradient-to-r from-space-blue/20 to-space-accent/20 rounded-md border border-white/10 py-3 px-4">
+        <div className="flex items-center gap-2 font-semibold mb-1">
+          <Link size={18} className="text-space-accent" />
+          <h3 className="text-space-accent">Announcements</h3>
+        </div>
+        <div className="overflow-hidden">
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: "-100%" }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            className="whitespace-nowrap"
+          >
+            <a href={bulletinInfo.formLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-space-accent transition-colors">
+              {bulletinInfo.text}
+            </a>
+          </motion.div>
+        </div>
+      </div>
+      
       <section className="min-h-[80vh] flex flex-col justify-center items-center text-center mb-24 relative overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -61,7 +85,7 @@ const Index = () => {
           </div>
           
           <motion.div
-            className="absolute w-48 h-48 top-1/2 left-0 -translate-y-1/2"
+            className="absolute w-56 h-56 top-1/2 left-0 -translate-y-1/2"
             style={{
               x: satelliteX,
               y: satelliteY,
@@ -72,6 +96,7 @@ const Index = () => {
               src="/lovable-uploads/0720423e-dd28-4520-8232-3c05b21040b9.png"
               alt="Satellite"
               className="w-full h-full object-contain"
+              style={{ filter: "drop-shadow(2px 2px 5px rgba(0,0,0,0.3))" }}
             />
           </motion.div>
         </motion.div>

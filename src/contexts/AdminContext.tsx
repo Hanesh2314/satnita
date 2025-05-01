@@ -19,6 +19,11 @@ interface ContactInfo {
   };
 }
 
+interface BulletinInfo {
+  text: string;
+  formLink: string;
+}
+
 interface AdminContextType {
   isAuthenticated: boolean;
   login: (password: string) => boolean;
@@ -27,6 +32,8 @@ interface AdminContextType {
   updateAboutUs: (newAboutUs: AboutUs) => void;
   contactInfo: ContactInfo;
   updateContactInfo: (newContactInfo: ContactInfo) => void;
+  bulletinInfo: BulletinInfo;
+  updateBulletinInfo: (newBulletinInfo: BulletinInfo) => void;
 }
 
 const defaultAboutUs: AboutUs = {
@@ -47,6 +54,11 @@ const defaultContactInfo: ContactInfo = {
   }
 };
 
+const defaultBulletinInfo: BulletinInfo = {
+  text: "Applications are now open for the Student Satellite Program! Last date for receipt of applications: 31.10.2024. Click here to apply now.",
+  formLink: "https://forms.google.com/studentsat-application"
+};
+
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export const AdminProvider = ({ children }: { children: ReactNode }) => {
@@ -65,6 +77,11 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     const saved = localStorage.getItem("contactInfo");
     return saved ? JSON.parse(saved) : defaultContactInfo;
   });
+  
+  const [bulletinInfo, setBulletinInfo] = useState<BulletinInfo>(() => {
+    const saved = localStorage.getItem("bulletinInfo");
+    return saved ? JSON.parse(saved) : defaultBulletinInfo;
+  });
 
   useEffect(() => {
     localStorage.setItem("aboutUs", JSON.stringify(aboutUs));
@@ -73,6 +90,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem("contactInfo", JSON.stringify(contactInfo));
   }, [contactInfo]);
+  
+  useEffect(() => {
+    localStorage.setItem("bulletinInfo", JSON.stringify(bulletinInfo));
+  }, [bulletinInfo]);
   
   useEffect(() => {
     localStorage.setItem("adminAuth", isAuthenticated ? "true" : "false");
@@ -97,6 +118,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const updateContactInfo = (newContactInfo: ContactInfo) => {
     setContactInfo(newContactInfo);
   };
+  
+  const updateBulletinInfo = (newBulletinInfo: BulletinInfo) => {
+    setBulletinInfo(newBulletinInfo);
+  };
 
   return (
     <AdminContext.Provider
@@ -107,7 +132,9 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
         aboutUs,
         updateAboutUs,
         contactInfo,
-        updateContactInfo
+        updateContactInfo,
+        bulletinInfo,
+        updateBulletinInfo
       }}
     >
       {children}
