@@ -15,10 +15,10 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  // Modified satellite animation - more scroll steps, positioned higher
-  const satelliteX = useTransform(scrollYProgress, [0, 0.6], ["-10%", "110%"]);
-  // Move the satellite position higher (from 50% to 40%)
-  const satelliteY = useTransform(scrollYProgress, [0, 0.6], ["40%", "40%"]);
+  // Modified satellite animation - centered to left side of Earth, size increased
+  const satelliteX = useTransform(scrollYProgress, [0, 0.6], ["-20%", "110%"]);
+  // Center the satellite vertically against the Earth
+  const satelliteY = useTransform(scrollYProgress, [0, 0.6], ["50%", "50%"]);
   // No rotation for realistic movement
   const satelliteRotate = useTransform(scrollYProgress, [0, 0.6], [0, 0]);
 
@@ -88,9 +88,9 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
           </div>
           
-          {/* Updated satellite element - larger by 25% and positioned higher */}
+          {/* Updated satellite element - 2x larger and centered to left of Earth */}
           <motion.div
-            className="absolute w-[225px] h-auto top-1/2 -translate-y-1/2"
+            className="absolute w-[450px] h-auto top-1/2 -translate-y-1/2"
             style={{
               x: satelliteX,
               y: satelliteY,
