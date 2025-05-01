@@ -15,10 +15,11 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  // Updated transform to move horizontally from left to right
-  const satelliteX = useTransform(scrollYProgress, [0, 0.3], ["-20%", "120%"]);
-  const satelliteY = useTransform(scrollYProgress, [0, 0.3], ["50%", "50%"]);
-  const satelliteRotate = useTransform(scrollYProgress, [0, 0.3], [0, 0]);
+  // Improved satellite animation - smoother, full left to right traversal
+  const satelliteX = useTransform(scrollYProgress, [0, 0.4], ["-10%", "110%"]);
+  const satelliteY = useTransform(scrollYProgress, [0, 0.4], ["50%", "50%"]);
+  // No rotation for realistic movement
+  const satelliteRotate = useTransform(scrollYProgress, [0, 0.4], [0, 0]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -86,16 +87,18 @@ const Index = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
           </div>
           
+          {/* Improved satellite element with better positioning and animation */}
           <motion.div
-            className="absolute w-64 h-64 top-1/2 -translate-y-1/2"
+            className="absolute w-[180px] h-auto top-1/2 -translate-y-1/2"
             style={{
               x: satelliteX,
               y: satelliteY,
-              rotate: satelliteRotate
+              rotate: satelliteRotate,
+              // Remove any filters or shadows to match reference
             }}
           >
             <img
-              src="/lovable-uploads/9566fbfb-c4ff-4c1e-b094-98b9afc46a7b.png"
+              src="/lovable-uploads/7b137e4f-ff56-4a01-ae96-c0d469cdb918.png"
               alt="Satellite"
               className="w-full h-full object-contain"
             />
