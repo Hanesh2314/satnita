@@ -14,11 +14,8 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  // Updated satellite animation - horizontal orbit across the Earth
-  // With a short scroll range - completes within top 30% of the page scroll
-  const satelliteX = useTransform(scrollYProgress, [0, 0.3], ["-10%", "110%"]);
-  // Keep the satellite at a fixed vertical position (center of Earth)
-  const satelliteY = useTransform(scrollYProgress, [0, 0.3], ["50%", "50%"]);
+  // Satellite animation - moves from left to right with a small scroll
+  const satelliteX = useTransform(scrollYProgress, [0, 0.15], ["10%", "90%"]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -77,30 +74,31 @@ const Index = () => {
           transition={{ delay: 0.5, duration: 1 }}
           className="mt-16 relative w-full max-w-[95vw] mx-auto"
         >
-          <div className="aspect-[16/9] rounded-lg overflow-hidden shadow-2xl">
+          <div className="aspect-[16/9] rounded-lg overflow-hidden shadow-2xl relative">
             <img 
               src="/lovable-uploads/189537bf-6ce2-48bc-875c-58f1362e4af7.png" 
               alt="Earth from space" 
               className="w-full h-full object-cover scale-125"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
+            
+            {/* Satellite positioned at the center-left of Earth, moving right with scroll */}
+            <motion.div
+              className="absolute w-[300px] h-auto"
+              style={{
+                left: satelliteX,
+                top: "50%", 
+                y: "-50%",
+                position: "absolute"
+              }}
+            >
+              <img
+                src="/lovable-uploads/8e75beb5-ab97-4390-85de-eeb236c5c9df.png"
+                alt="Satellite"
+                className="w-full h-full object-contain"
+              />
+            </motion.div>
           </div>
-          
-          {/* Updated satellite animation - now centered horizontally across Earth */}
-          <motion.div
-            className="absolute w-[250px] h-auto"
-            style={{
-              x: satelliteX,
-              y: satelliteY,
-              transform: "translate(-50%, -50%)",
-            }}
-          >
-            <img
-              src="/lovable-uploads/8e75beb5-ab97-4390-85de-eeb236c5c9df.png"
-              alt="Satellite"
-              className="w-full h-full object-contain"
-            />
-          </motion.div>
         </motion.div>
       </section>
       
