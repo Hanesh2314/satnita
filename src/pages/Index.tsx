@@ -4,20 +4,21 @@ import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
 import { useRef } from "react";
+import { useIsMobile } from "../hooks/use-mobile";
 
 const Index = () => {
   const navigate = useNavigate();
   const { aboutUs, bulletinInfo } = useAdmin();
   const containerRef = useRef(null);
+  const isMobile = useIsMobile();
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
   
-  // Improved satellite animation - smooth movement from left edge to right edge of Earth
-  // Using a smaller scroll range for more immediate response
-  const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["5%", "75%"]);
+  // Improved satellite animation - from true left edge to right edge of Earth
+  const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["0%", "80%"]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -84,24 +85,20 @@ const Index = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
             
-            {/* Enhanced satellite animation with easing functions for smoother movement */}
+            {/* Satellite animation - adjusted position and removed border glow */}
             <motion.div
-              className="absolute w-[300px] h-auto"
+              className="absolute"
               style={{
                 left: satelliteX,
                 top: "50%", 
                 y: "-50%",
-                transition: {
-                  type: "spring",
-                  stiffness: 50,
-                  damping: 15
-                }
+                width: isMobile ? "175px" : "300px"
               }}
             >
               <img
                 src="/lovable-uploads/8e75beb5-ab97-4390-85de-eeb236c5c9df.png"
                 alt="Satellite"
-                className="w-full h-full object-contain animate-pulse-glow"
+                className="w-full h-full object-contain"
               />
             </motion.div>
           </div>
