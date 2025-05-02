@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -14,8 +15,9 @@ const Index = () => {
     offset: ["start start", "end start"]
   });
   
-  // Satellite animation - moves from left to right with a small scroll
-  const satelliteX = useTransform(scrollYProgress, [0, 0.15], ["10%", "90%"]);
+  // Improved satellite animation - smooth movement from left edge to right edge of Earth
+  // Using a smaller scroll range for more immediate response
+  const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["5%", "75%"]);
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -82,20 +84,24 @@ const Index = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-space-dark/80 to-transparent"></div>
             
-            {/* Satellite positioned at the center-left of Earth, moving right with scroll */}
+            {/* Enhanced satellite animation with easing functions for smoother movement */}
             <motion.div
               className="absolute w-[300px] h-auto"
               style={{
                 left: satelliteX,
                 top: "50%", 
                 y: "-50%",
-                position: "absolute"
+                transition: {
+                  type: "spring",
+                  stiffness: 50,
+                  damping: 15
+                }
               }}
             >
               <img
                 src="/lovable-uploads/8e75beb5-ab97-4390-85de-eeb236c5c9df.png"
                 alt="Satellite"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain animate-pulse-glow"
               />
             </motion.div>
           </div>
