@@ -5,20 +5,20 @@ import { useAdmin } from "../contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
 
 const BulletinEditor = () => {
-  const { bulletinInfo, updateBulletinInfo } = useAdmin();
+  const { bulletinInfo, updateBulletinInfo, refreshBulletinInfo } = useAdmin();
   const { toast } = useToast();
   const [bulletinState, setBulletinState] = useState({
-    text: bulletinInfo.text || "",
-    formLink: bulletinInfo.formLink || ""
+    text: bulletinInfo?.text || "",
+    formLink: bulletinInfo?.formLink || ""
   });
   
   // Update local state whenever bulletinInfo changes from context
   useEffect(() => {
-    if (bulletinInfo.text && bulletinInfo.formLink) {
+    if (bulletinInfo) {
       console.log("Updating bulletin editor state from context:", bulletinInfo);
       setBulletinState({
-        text: bulletinInfo.text,
-        formLink: bulletinInfo.formLink
+        text: bulletinInfo.text || "",
+        formLink: bulletinInfo.formLink || ""
       });
     }
   }, [bulletinInfo]);
@@ -35,7 +35,7 @@ const BulletinEditor = () => {
   };
 
   const handleClearCache = async () => {
-    // Clear localStorage for this domain
+    setIsUpdating(true);
     try {
       // Preserve key parts of localStorage but clear bulletin cache
       const adminAuth = localStorage.getItem("adminAuth");
@@ -67,8 +67,15 @@ const BulletinEditor = () => {
         }
       }
       
-      // Force a page reload with a cache-busting parameter
-      window.location.href = window.location.pathname + '?clearcache=' + Date.now();
+      // Refresh data from localStorage (or default)
+      refreshBulletinInfo();
+      
+      setIsUpdating(false);
+      toast({
+        title: "Cache Cleared",
+        description: "Local cache cleared and data refreshed.",
+        variant: "default"
+      });
     } catch (error) {
       console.error("Error clearing cache:", error);
       toast({
@@ -76,6 +83,7 @@ const BulletinEditor = () => {
         description: "Could not clear browser cache.",
         variant: "destructive"
       });
+      setIsUpdating(false);
     }
   };
 
@@ -83,10 +91,35 @@ const BulletinEditor = () => {
     e.preventDefault();
     
     // Validate input
-    if (!bulletinState.text || !bulletinState.formLink) {
+    if (!bulletinState.text || !bulletinState.text.trim()) {
       toast({
         title: "Validation Error",
-        description: "Both announcement text and form link are required.",
+        description: "Announcement text cannot be empty.",
+        variant: "destructive"
+      });
+      setIsError(true);
+      setTimeout(() => setIsError(false), 3000);
+      return;
+    }
+    
+    if (!bulletinState.formLink || !bulletinState.formLink.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Form link cannot be empty.",
+        variant: "destructive"
+      });
+      setIsError(true);
+      setTimeout(() => setIsError(false), 3000);
+      return;
+    }
+    
+    // Basic URL validation
+    try {
+      new URL(bulletinState.formLink);
+    } catch (e) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid URL for the form link.",
         variant: "destructive"
       });
       setIsError(true);
@@ -103,15 +136,15 @@ const BulletinEditor = () => {
       
       // Update in context
       updateBulletinInfo({
-        text: bulletinState.text,
-        formLink: bulletinState.formLink
+        text: bulletinState.text.trim(),
+        formLink: bulletinState.formLink.trim()
       });
       
       // Save with timestamp to force cache invalidation
       const timestamp = new Date().getTime();
       const bulletinData = {
-        text: bulletinState.text,
-        formLink: bulletinState.formLink,
+        text: bulletinState.text.trim(),
+        formLink: bulletinState.formLink.trim(),
         lastUpdated: timestamp
       };
       
@@ -220,9 +253,10 @@ const BulletinEditor = () => {
             type="button"
             onClick={handleClearCache}
             className="space-btn-secondary flex items-center justify-center"
+            disabled={isUpdating}
           >
             <RefreshCw size={16} className="mr-2" />
-            Clear Cache
+            {isUpdating ? "Processing..." : "Clear Cache"}
           </button>
         </div>
       </form>

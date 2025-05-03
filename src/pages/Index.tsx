@@ -1,19 +1,23 @@
+
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
 import { useRef, useEffect, useState } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { aboutUs, bulletinInfo, refreshBulletinInfo } = useAdmin();
   const containerRef = useRef(null);
   const isMobile = useIsMobile();
   const [announcement, setAnnouncement] = useState({
-    text: bulletinInfo?.text || "Loading announcements...",
+    text: bulletinInfo?.text || "",
     formLink: bulletinInfo?.formLink || "#",
-    key: Date.now()
+    key: Date.now(),
+    isLoading: true
   });
   
   const { scrollYProgress } = useScroll({
@@ -31,8 +35,16 @@ const Index = () => {
       setAnnouncement({
         text: bulletinInfo.text,
         formLink: bulletinInfo.formLink,
-        key: bulletinInfo.lastUpdated || Date.now()
+        key: bulletinInfo.lastUpdated || Date.now(),
+        isLoading: false
       });
+    } else {
+      // Handle empty bulletin info
+      console.warn("Index: Empty or invalid bulletin info received");
+      setAnnouncement(prev => ({
+        ...prev,
+        isLoading: false
+      }));
     }
   }, [bulletinInfo]);
   
@@ -61,8 +73,10 @@ const Index = () => {
           <Link size={18} className="text-space-accent" />
           <h3 className="text-space-accent">Announcements</h3>
         </div>
-        <div className="overflow-hidden">
-          {announcement.text ? (
+        <div className="overflow-hidden min-h-[1.5rem]">
+          {announcement.isLoading ? (
+            <div className="text-white/70">Loading announcements...</div>
+          ) : announcement.text ? (
             <motion.div
               key={announcement.key}
               initial={{ x: "100%" }}

@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from "react";
 
 interface AboutUs {
   title: string;
@@ -88,10 +88,12 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         // Ensure we have a lastUpdated field
-        return {
-          ...parsed,
-          lastUpdated: parsed.lastUpdated || Date.now()
-        };
+        if (parsed && parsed.text && parsed.formLink) {
+          return {
+            ...parsed,
+            lastUpdated: parsed.lastUpdated || Date.now()
+          };
+        }
       }
       return defaultBulletinInfo;
     } catch (error) {
@@ -101,7 +103,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   });
 
   // Add a refresh function to force new bulletin data
-  const refreshBulletinInfo = () => {
+  const refreshBulletinInfo = useCallback(() => {
     try {
       console.log("Refreshing bulletin info...");
       const saved = localStorage.getItem("bulletinInfo");
@@ -110,31 +112,28 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
           const parsed = JSON.parse(saved);
           if (parsed && parsed.text && parsed.formLink) {
             console.log("Found valid bulletin info in localStorage:", parsed);
+            // Always update with a new timestamp to force re-rendering
             setBulletinInfo({
-              ...parsed,
-              lastUpdated: Date.now() // Update timestamp
+              text: parsed.text,
+              formLink: parsed.formLink,
+              lastUpdated: Date.now() // Update timestamp to force rerender
             });
+            return; // Exit early if we found valid data
           } else {
-            console.log("Bulletin info from localStorage is incomplete, using default");
-            setBulletinInfo({
-              ...defaultBulletinInfo,
-              lastUpdated: Date.now()
-            });
+            console.log("Bulletin info from localStorage is incomplete");
           }
         } catch (e) {
           console.error("Failed to parse bulletin info:", e);
-          setBulletinInfo({
-            ...defaultBulletinInfo,
-            lastUpdated: Date.now()
-          });
         }
       } else {
-        console.log("No bulletin info found in localStorage, using default");
-        setBulletinInfo({
-          ...defaultBulletinInfo,
-          lastUpdated: Date.now()
-        });
+        console.log("No bulletin info found in localStorage");
       }
+      
+      // If we reach here, we didn't find valid data or had an error
+      setBulletinInfo({
+        ...defaultBulletinInfo,
+        lastUpdated: Date.now()
+      });
     } catch (error) {
       console.error("Error refreshing bulletin info:", error);
       // Fall back to default in case of any errors
@@ -143,16 +142,18 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
         lastUpdated: Date.now()
       });
     }
-  };
+  }, []);
 
   // Add an interval to check for bulletin updates
   useEffect(() => {
+    refreshBulletinInfo(); // Initial load
+    
     const checkInterval = setInterval(() => {
       refreshBulletinInfo();
     }, 30000); // Check every 30 seconds
     
     return () => clearInterval(checkInterval);
-  }, []);
+  }, [refreshBulletinInfo]);
 
   useEffect(() => {
     localStorage.setItem("aboutUs", JSON.stringify(aboutUs));
@@ -166,7 +167,11 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     // Only save if bulletin info has valid content
     if (bulletinInfo.text && bulletinInfo.formLink) {
       console.log("Saving bulletin info to localStorage:", bulletinInfo);
-      localStorage.setItem("bulletinInfo", JSON.stringify(bulletinInfo));
+      localStorage.setItem("bulletinInfo", JSON.stringify({
+        text: bulletinInfo.text,
+        formLink: bulletinInfo.formLink,
+        lastUpdated: bulletinInfo.lastUpdated || Date.now()
+      }));
     } else {
       console.warn("Attempted to save empty bulletin info, preserving previous value");
     }
