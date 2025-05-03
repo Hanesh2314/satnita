@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, AlertCircle, RefreshCw } from "lucide-react";
 import { useAdmin } from "../contexts/AdminContext";
 import { useToast } from "@/hooks/use-toast";
@@ -8,9 +8,20 @@ const BulletinEditor = () => {
   const { bulletinInfo, updateBulletinInfo } = useAdmin();
   const { toast } = useToast();
   const [bulletinState, setBulletinState] = useState({
-    text: bulletinInfo.text,
-    formLink: bulletinInfo.formLink
+    text: bulletinInfo.text || "",
+    formLink: bulletinInfo.formLink || ""
   });
+  
+  // Update local state whenever bulletinInfo changes from context
+  useEffect(() => {
+    if (bulletinInfo.text && bulletinInfo.formLink) {
+      console.log("Updating bulletin editor state from context:", bulletinInfo);
+      setBulletinState({
+        text: bulletinInfo.text,
+        formLink: bulletinInfo.formLink
+      });
+    }
+  }, [bulletinInfo]);
   
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -25,38 +36,71 @@ const BulletinEditor = () => {
 
   const handleClearCache = async () => {
     // Clear localStorage for this domain
-    localStorage.removeItem("bulletinInfo");
+    try {
+      // Preserve key parts of localStorage but clear bulletin cache
+      const adminAuth = localStorage.getItem("adminAuth");
+      const aboutUs = localStorage.getItem("aboutUs");
+      const contactInfo = localStorage.getItem("contactInfo");
+      
+      // Remove bulletin
+      localStorage.removeItem("bulletinInfo");
+      
+      // Restore other items
+      if (adminAuth) localStorage.setItem("adminAuth", adminAuth);
+      if (aboutUs) localStorage.setItem("aboutUs", aboutUs);
+      if (contactInfo) localStorage.setItem("contactInfo", contactInfo);
 
-    // Clear all caches
-    if ('caches' in window) {
-      try {
-        const cacheNames = await caches.keys();
-        await Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
-        );
-        toast({
-          title: "Cache Cleared",
-          description: "Browser cache has been cleared successfully.",
-          variant: "default"
-        });
-      } catch (error) {
-        console.warn('Cache clearing failed:', error);
-        toast({
-          title: "Cache Clearing Failed",
-          description: "Could not clear browser cache.",
-          variant: "destructive"
-        });
+      // Clear all caches
+      if ('caches' in window) {
+        try {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+          );
+          toast({
+            title: "Cache Cleared",
+            description: "Browser cache has been cleared successfully.",
+            variant: "default"
+          });
+        } catch (error) {
+          console.warn('Cache clearing failed:', error);
+        }
       }
+      
+      // Force a page reload with a cache-busting parameter
+      window.location.href = window.location.pathname + '?clearcache=' + Date.now();
+    } catch (error) {
+      console.error("Error clearing cache:", error);
+      toast({
+        title: "Cache Clearing Failed",
+        description: "Could not clear browser cache.",
+        variant: "destructive"
+      });
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate input
+    if (!bulletinState.text || !bulletinState.formLink) {
+      toast({
+        title: "Validation Error",
+        description: "Both announcement text and form link are required.",
+        variant: "destructive"
+      });
+      setIsError(true);
+      setTimeout(() => setIsError(false), 3000);
+      return;
+    }
+    
     setIsSuccess(false);
     setIsError(false);
     setIsUpdating(true);
     
     try {
+      console.log("Submitting bulletin update:", bulletinState);
+      
       // Update in context
       updateBulletinInfo({
         text: bulletinState.text,
@@ -73,14 +117,6 @@ const BulletinEditor = () => {
       
       // Explicitly set in localStorage with timestamp
       localStorage.setItem("bulletinInfo", JSON.stringify(bulletinData));
-      
-      // Force a page reload to ensure all components re-fetch
-      // This helps with cross-device synchronization
-      const pageUrl = window.location.href;
-      const cacheBust = `cachebust=${timestamp}`;
-      const url = pageUrl.includes('?') 
-        ? `${pageUrl}&${cacheBust}` 
-        : `${pageUrl}?${cacheBust}`;
       
       // Clear any possible cached data
       if ('caches' in window) {
@@ -132,6 +168,7 @@ const BulletinEditor = () => {
             rows={3}
             className="space-input w-full resize-none"
             placeholder="Enter announcement text here..."
+            required
           />
         </div>
         
@@ -145,6 +182,7 @@ const BulletinEditor = () => {
             onChange={handleInputChange}
             className="space-input w-full"
             placeholder="https://forms.google.com/..."
+            required
           />
         </div>
         

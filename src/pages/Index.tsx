@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
 
 const Index = () => {
@@ -10,6 +10,11 @@ const Index = () => {
   const { aboutUs, bulletinInfo, refreshBulletinInfo } = useAdmin();
   const containerRef = useRef(null);
   const isMobile = useIsMobile();
+  const [announcement, setAnnouncement] = useState({
+    text: bulletinInfo?.text || "Loading announcements...",
+    formLink: bulletinInfo?.formLink || "#",
+    key: Date.now()
+  });
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -19,24 +24,35 @@ const Index = () => {
   // Improved satellite animation - from true left edge to right edge of Earth
   const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["0%", "80%"]);
   
+  // Update local state whenever bulletinInfo changes
+  useEffect(() => {
+    if (bulletinInfo && bulletinInfo.text && bulletinInfo.formLink) {
+      console.log("Index: Updating announcement with:", bulletinInfo);
+      setAnnouncement({
+        text: bulletinInfo.text,
+        formLink: bulletinInfo.formLink,
+        key: bulletinInfo.lastUpdated || Date.now()
+      });
+    }
+  }, [bulletinInfo]);
+  
   // Refresh bulletin data when component mounts and periodically
   useEffect(() => {
+    console.log("Index: Component mounted, refreshing bulletin");
     // Always refresh when component mounts
     refreshBulletinInfo();
     
     // Set up interval to check for updates
     const intervalId = setInterval(() => {
+      console.log("Index: Periodic refresh triggered");
       refreshBulletinInfo();
-    }, 60000); // Check every minute
+    }, 30000); // Check every 30 seconds
     
     return () => {
       clearInterval(intervalId);
     };
   }, [refreshBulletinInfo]);
   
-  // Generate a unique key for the announcement to force re-render when bulletin updates
-  const announcementKey = bulletinInfo.lastUpdated || Date.now();
-
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
       {/* Information Bulletin */}
@@ -46,26 +62,30 @@ const Index = () => {
           <h3 className="text-space-accent">Announcements</h3>
         </div>
         <div className="overflow-hidden">
-          <motion.div
-            key={announcementKey}
-            initial={{ x: "100%" }}
-            animate={{ x: "-100%" }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-            className="whitespace-nowrap"
-          >
-            <a 
-              href={bulletinInfo.formLink} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-white hover:text-space-accent transition-colors"
+          {announcement.text ? (
+            <motion.div
+              key={announcement.key}
+              initial={{ x: "100%" }}
+              animate={{ x: "-100%" }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+              className="whitespace-nowrap"
             >
-              {bulletinInfo.text}
-            </a>
-          </motion.div>
+              <a 
+                href={announcement.formLink} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-white hover:text-space-accent transition-colors"
+              >
+                {announcement.text}
+              </a>
+            </motion.div>
+          ) : (
+            <div className="text-white/70">No announcements available</div>
+          )}
         </div>
       </div>
       

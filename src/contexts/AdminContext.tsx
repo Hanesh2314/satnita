@@ -103,16 +103,45 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   // Add a refresh function to force new bulletin data
   const refreshBulletinInfo = () => {
     try {
+      console.log("Refreshing bulletin info...");
       const saved = localStorage.getItem("bulletinInfo");
       if (saved) {
-        const parsed = JSON.parse(saved);
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.text && parsed.formLink) {
+            console.log("Found valid bulletin info in localStorage:", parsed);
+            setBulletinInfo({
+              ...parsed,
+              lastUpdated: Date.now() // Update timestamp
+            });
+          } else {
+            console.log("Bulletin info from localStorage is incomplete, using default");
+            setBulletinInfo({
+              ...defaultBulletinInfo,
+              lastUpdated: Date.now()
+            });
+          }
+        } catch (e) {
+          console.error("Failed to parse bulletin info:", e);
+          setBulletinInfo({
+            ...defaultBulletinInfo,
+            lastUpdated: Date.now()
+          });
+        }
+      } else {
+        console.log("No bulletin info found in localStorage, using default");
         setBulletinInfo({
-          ...parsed,
-          lastUpdated: Date.now() // Update timestamp
+          ...defaultBulletinInfo,
+          lastUpdated: Date.now()
         });
       }
     } catch (error) {
       console.error("Error refreshing bulletin info:", error);
+      // Fall back to default in case of any errors
+      setBulletinInfo({
+        ...defaultBulletinInfo,
+        lastUpdated: Date.now()
+      });
     }
   };
 
@@ -134,7 +163,13 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   }, [contactInfo]);
   
   useEffect(() => {
-    localStorage.setItem("bulletinInfo", JSON.stringify(bulletinInfo));
+    // Only save if bulletin info has valid content
+    if (bulletinInfo.text && bulletinInfo.formLink) {
+      console.log("Saving bulletin info to localStorage:", bulletinInfo);
+      localStorage.setItem("bulletinInfo", JSON.stringify(bulletinInfo));
+    } else {
+      console.warn("Attempted to save empty bulletin info, preserving previous value");
+    }
   }, [bulletinInfo]);
   
   useEffect(() => {
@@ -162,6 +197,13 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const updateBulletinInfo = (newBulletinInfo: BulletinInfo) => {
+    // Validate input to prevent empty announcements
+    if (!newBulletinInfo.text || !newBulletinInfo.formLink) {
+      console.error("Cannot update with empty bulletin content");
+      return;
+    }
+    
+    console.log("Updating bulletin info:", newBulletinInfo);
     setBulletinInfo({
       ...newBulletinInfo,
       lastUpdated: Date.now() // Always update the timestamp
