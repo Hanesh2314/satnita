@@ -22,6 +22,7 @@ interface ContactInfo {
 interface BulletinInfo {
   text: string;
   formLink: string;
+  lastUpdated?: number; // Add timestamp for cache busting
 }
 
 interface AdminContextType {
@@ -34,6 +35,7 @@ interface AdminContextType {
   updateContactInfo: (newContactInfo: ContactInfo) => void;
   bulletinInfo: BulletinInfo;
   updateBulletinInfo: (newBulletinInfo: BulletinInfo) => void;
+  refreshBulletinInfo: () => void;
 }
 
 const defaultAboutUs: AboutUs = {
@@ -56,7 +58,8 @@ const defaultContactInfo: ContactInfo = {
 
 const defaultBulletinInfo: BulletinInfo = {
   text: "Applications are now open for the Student Satellite Program! Last date for receipt of applications: 31.10.2024. Click here to apply now.",
-  formLink: "https://forms.google.com/studentsat-application"
+  formLink: "https://forms.google.com/studentsat-application",
+  lastUpdated: Date.now()
 };
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -79,9 +82,48 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   });
   
   const [bulletinInfo, setBulletinInfo] = useState<BulletinInfo>(() => {
-    const saved = localStorage.getItem("bulletinInfo");
-    return saved ? JSON.parse(saved) : defaultBulletinInfo;
+    try {
+      // Always attempt to get fresh data by adding a cache buster
+      const saved = localStorage.getItem("bulletinInfo");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Ensure we have a lastUpdated field
+        return {
+          ...parsed,
+          lastUpdated: parsed.lastUpdated || Date.now()
+        };
+      }
+      return defaultBulletinInfo;
+    } catch (error) {
+      console.error("Error parsing bulletin info:", error);
+      return defaultBulletinInfo;
+    }
   });
+
+  // Add a refresh function to force new bulletin data
+  const refreshBulletinInfo = () => {
+    try {
+      const saved = localStorage.getItem("bulletinInfo");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setBulletinInfo({
+          ...parsed,
+          lastUpdated: Date.now() // Update timestamp
+        });
+      }
+    } catch (error) {
+      console.error("Error refreshing bulletin info:", error);
+    }
+  };
+
+  // Add an interval to check for bulletin updates
+  useEffect(() => {
+    const checkInterval = setInterval(() => {
+      refreshBulletinInfo();
+    }, 30000); // Check every 30 seconds
+    
+    return () => clearInterval(checkInterval);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("aboutUs", JSON.stringify(aboutUs));
@@ -120,7 +162,10 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const updateBulletinInfo = (newBulletinInfo: BulletinInfo) => {
-    setBulletinInfo(newBulletinInfo);
+    setBulletinInfo({
+      ...newBulletinInfo,
+      lastUpdated: Date.now() // Always update the timestamp
+    });
   };
 
   return (
@@ -134,7 +179,8 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
         contactInfo,
         updateContactInfo,
         bulletinInfo,
-        updateBulletinInfo
+        updateBulletinInfo,
+        refreshBulletinInfo
       }}
     >
       {children}

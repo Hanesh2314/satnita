@@ -1,14 +1,13 @@
-
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAdmin } from "../contexts/AdminContext";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { aboutUs, bulletinInfo } = useAdmin();
+  const { aboutUs, bulletinInfo, refreshBulletinInfo } = useAdmin();
   const containerRef = useRef(null);
   const isMobile = useIsMobile();
   
@@ -19,6 +18,24 @@ const Index = () => {
   
   // Improved satellite animation - from true left edge to right edge of Earth
   const satelliteX = useTransform(scrollYProgress, [0, 0.2], ["0%", "80%"]);
+  
+  // Refresh bulletin data when component mounts and periodically
+  useEffect(() => {
+    // Always refresh when component mounts
+    refreshBulletinInfo();
+    
+    // Set up interval to check for updates
+    const intervalId = setInterval(() => {
+      refreshBulletinInfo();
+    }, 60000); // Check every minute
+    
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [refreshBulletinInfo]);
+  
+  // Generate a unique key for the announcement to force re-render when bulletin updates
+  const announcementKey = bulletinInfo.lastUpdated || Date.now();
 
   return (
     <div className="page-transition container mx-auto px-6 pt-12 pb-16" ref={containerRef}>
@@ -30,6 +47,7 @@ const Index = () => {
         </div>
         <div className="overflow-hidden">
           <motion.div
+            key={announcementKey}
             initial={{ x: "100%" }}
             animate={{ x: "-100%" }}
             transition={{
@@ -39,7 +57,12 @@ const Index = () => {
             }}
             className="whitespace-nowrap"
           >
-            <a href={bulletinInfo.formLink} target="_blank" rel="noopener noreferrer" className="text-white hover:text-space-accent transition-colors">
+            <a 
+              href={bulletinInfo.formLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-white hover:text-space-accent transition-colors"
+            >
               {bulletinInfo.text}
             </a>
           </motion.div>

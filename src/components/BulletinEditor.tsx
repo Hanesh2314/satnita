@@ -1,10 +1,12 @@
 
 import { useState } from "react";
-import { Check, AlertCircle } from "lucide-react";
+import { Check, AlertCircle, RefreshCw } from "lucide-react";
 import { useAdmin } from "../contexts/AdminContext";
+import { useToast } from "@/hooks/use-toast";
 
 const BulletinEditor = () => {
   const { bulletinInfo, updateBulletinInfo } = useAdmin();
+  const { toast } = useToast();
   const [bulletinState, setBulletinState] = useState({
     text: bulletinInfo.text,
     formLink: bulletinInfo.formLink
@@ -12,6 +14,7 @@ const BulletinEditor = () => {
   
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -20,22 +23,64 @@ const BulletinEditor = () => {
     setBulletinState(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleClearCache = async () => {
+    // Clear localStorage for this domain
+    localStorage.removeItem("bulletinInfo");
+
+    // Clear all caches
+    if ('caches' in window) {
+      try {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
+        toast({
+          title: "Cache Cleared",
+          description: "Browser cache has been cleared successfully.",
+          variant: "default"
+        });
+      } catch (error) {
+        console.warn('Cache clearing failed:', error);
+        toast({
+          title: "Cache Clearing Failed",
+          description: "Could not clear browser cache.",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSuccess(false);
     setIsError(false);
+    setIsUpdating(true);
     
     try {
+      // Update in context
       updateBulletinInfo({
         text: bulletinState.text,
         formLink: bulletinState.formLink
       });
       
-      // Force a reload of localStorage to ensure changes are saved
-      localStorage.setItem("bulletinInfo", JSON.stringify({
+      // Save with timestamp to force cache invalidation
+      const timestamp = new Date().getTime();
+      const bulletinData = {
         text: bulletinState.text,
-        formLink: bulletinState.formLink
-      }));
+        formLink: bulletinState.formLink,
+        lastUpdated: timestamp
+      };
+      
+      // Explicitly set in localStorage with timestamp
+      localStorage.setItem("bulletinInfo", JSON.stringify(bulletinData));
+      
+      // Force a page reload to ensure all components re-fetch
+      // This helps with cross-device synchronization
+      const pageUrl = window.location.href;
+      const cacheBust = `cachebust=${timestamp}`;
+      const url = pageUrl.includes('?') 
+        ? `${pageUrl}&${cacheBust}` 
+        : `${pageUrl}?${cacheBust}`;
       
       // Clear any possible cached data
       if ('caches' in window) {
@@ -49,11 +94,26 @@ const BulletinEditor = () => {
         }
       }
       
+      setIsUpdating(false);
       setIsSuccess(true);
+      
+      // Show success toast
+      toast({
+        title: "Bulletin Updated",
+        description: "Changes have been published successfully and will be visible to all users.",
+        variant: "default"
+      });
+      
       setTimeout(() => setIsSuccess(false), 3000);
     } catch (error) {
       console.error("Error updating Bulletin Info:", error);
+      setIsUpdating(false);
       setIsError(true);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update bulletin information. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -102,12 +162,31 @@ const BulletinEditor = () => {
           </div>
         )}
         
-        <button
-          type="submit"
-          className="space-btn"
-        >
-          Save Bulletin Changes
-        </button>
+        <div className="flex flex-col md:flex-row gap-3">
+          <button
+            type="submit"
+            className="space-btn flex items-center justify-center"
+            disabled={isUpdating}
+          >
+            {isUpdating ? (
+              <>
+                <RefreshCw size={16} className="mr-2 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              "Save Bulletin Changes"
+            )}
+          </button>
+          
+          <button
+            type="button"
+            onClick={handleClearCache}
+            className="space-btn-secondary flex items-center justify-center"
+          >
+            <RefreshCw size={16} className="mr-2" />
+            Clear Cache
+          </button>
+        </div>
       </form>
     </div>
   );
