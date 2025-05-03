@@ -20,7 +20,7 @@ const BulletinEditor = () => {
     setBulletinState(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSuccess(false);
     setIsError(false);
@@ -30,6 +30,25 @@ const BulletinEditor = () => {
         text: bulletinState.text,
         formLink: bulletinState.formLink
       });
+      
+      // Force a reload of localStorage to ensure changes are saved
+      localStorage.setItem("bulletinInfo", JSON.stringify({
+        text: bulletinState.text,
+        formLink: bulletinState.formLink
+      }));
+      
+      // Clear any possible cached data
+      if ('caches' in window) {
+        try {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+          );
+        } catch (error) {
+          console.warn('Cache clearing failed:', error);
+        }
+      }
+      
       setIsSuccess(true);
       setTimeout(() => setIsSuccess(false), 3000);
     } catch (error) {
