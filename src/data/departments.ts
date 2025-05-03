@@ -74,6 +74,22 @@ const departments: Department[] = [
     ]
   },
   {
+    id: "mechanical-subsystem",
+    name: "Mechanical Subsystem",
+    description: "The foundation of every space mission is what holds it all together.",
+    icon: "layers",
+    skills: [
+      "CAD Design",
+      "Structural Simulations",
+      "Mechanism Design"
+    ],
+    knowledge: [
+      "Material Selection",
+      "Vibration Analysis",
+      "Thermal Management"
+    ]
+  },
+  {
     id: "payload",
     name: "Payload Subsystem",
     description: "The scientific heart of our mission focused on pollution detection and monitoring from orbit.",

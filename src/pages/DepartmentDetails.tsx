@@ -1,7 +1,6 @@
-
 import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Zap, Radio, Cpu, Compass } from "lucide-react";
+import { ArrowLeft, Zap, Radio, Cpu, Compass, Layers } from "lucide-react";
 import { getDepartmentById } from "../data/departments";
 
 const DepartmentDetails = () => {
@@ -27,7 +26,8 @@ const DepartmentDetails = () => {
     "zap": <Zap size={32} />,
     "radio": <Radio size={32} />,
     "cpu": <Cpu size={32} />,
-    "compass": <Compass size={32} />
+    "compass": <Compass size={32} />,
+    "layers": <Layers size={32} />
   };
 
   const subsystemContent: {
@@ -83,6 +83,17 @@ const DepartmentDetails = () => {
         'Kalman filtering and sensor fusion'
       ],
       closing: 'It\'s rocket science — and we\'re building it from scratch.'
+    },
+    'mechanical-subsystem': {
+      quote: '"The foundation of every space mission is what holds it all together."',
+      description: "The Mechanical Subsystem is the backbone of the satellite — everything else is built around it. From the satellite's structural framework and vibration-resistant joints to thermal insulation and deployment mechanisms, this subsystem ensures the satellite survives launch conditions and performs reliably in space.",
+      responsibilities: [
+        "CAD design and structural simulations",
+        "Vibration and thermal stress analysis",
+        "Mechanism design (hinges, deployables)",
+        "Material selection and integration planning"
+      ],
+      closing: "This is where engineering meets resilience — and every bolt matters."
     },
     'payload': {
       quote: '"The soul of the satellite: what it sees, it shares."',

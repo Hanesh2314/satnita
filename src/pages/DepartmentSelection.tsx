@@ -1,8 +1,7 @@
-
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import departments from "../data/departments";
-import { Zap, Radio, Cpu, Compass } from "lucide-react";
+import { Zap, Radio, Cpu, Compass, Layers } from "lucide-react";
 
 const DepartmentSelection = () => {
   const navigate = useNavigate();
@@ -11,7 +10,8 @@ const DepartmentSelection = () => {
     "zap": <Zap size={24} />,
     "radio": <Radio size={24} />,
     "cpu": <Cpu size={24} />,
-    "compass": <Compass size={24} />
+    "compass": <Compass size={24} />,
+    "layers": <Layers size={24} />
   };
 
   const handleDepartmentClick = (id: string) => {
