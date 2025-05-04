@@ -7,18 +7,19 @@ import { useToast } from "@/hooks/use-toast";
 const BulletinEditor = () => {
   const { bulletinInfo, updateBulletinInfo, refreshBulletinInfo } = useAdmin();
   const { toast } = useToast();
+  // Initialize with default values to prevent null/undefined issues
   const [bulletinState, setBulletinState] = useState({
-    text: bulletinInfo?.text || "",
-    formLink: bulletinInfo?.formLink || ""
+    text: "Applications are now open . click here",
+    formLink: "https://docs.google.com/forms/d/e/1FAIpQLScoTPloDuYsuSId-j6OVgHTRFSsN6eF2Y6O2RUvQL_O7CHlBA/viewform?usp=header"
   });
   
   // Update local state whenever bulletinInfo changes from context
   useEffect(() => {
-    if (bulletinInfo) {
+    if (bulletinInfo && bulletinInfo.text && bulletinInfo.formLink) {
       console.log("Updating bulletin editor state from context:", bulletinInfo);
       setBulletinState({
-        text: bulletinInfo.text || "",
-        formLink: bulletinInfo.formLink || ""
+        text: bulletinInfo.text,
+        formLink: bulletinInfo.formLink
       });
     }
   }, [bulletinInfo]);
@@ -37,37 +38,28 @@ const BulletinEditor = () => {
   const handleClearCache = async () => {
     setIsUpdating(true);
     try {
-      // Preserve key parts of localStorage but clear bulletin cache
-      const adminAuth = localStorage.getItem("adminAuth");
-      const aboutUs = localStorage.getItem("aboutUs");
-      const contactInfo = localStorage.getItem("contactInfo");
-      
-      // Remove bulletin
+      // Clear storage and reload with defaults
       localStorage.removeItem("bulletinInfo");
       
-      // Restore other items
-      if (adminAuth) localStorage.setItem("adminAuth", adminAuth);
-      if (aboutUs) localStorage.setItem("aboutUs", aboutUs);
-      if (contactInfo) localStorage.setItem("contactInfo", contactInfo);
-
-      // Clear all caches
+      // Reset to default values
+      setBulletinState({
+        text: "Applications are now open . click here",
+        formLink: "https://docs.google.com/forms/d/e/1FAIpQLScoTPloDuYsuSId-j6OVgHTRFSsN6eF2Y6O2RUvQL_O7CHlBA/viewform?usp=header"
+      });
+      
+      // Clear browser caches
       if ('caches' in window) {
         try {
           const cacheNames = await caches.keys();
           await Promise.all(
             cacheNames.map(cacheName => caches.delete(cacheName))
           );
-          toast({
-            title: "Cache Cleared",
-            description: "Browser cache has been cleared successfully.",
-            variant: "default"
-          });
         } catch (error) {
           console.warn('Cache clearing failed:', error);
         }
       }
       
-      // Refresh data from localStorage (or default)
+      // Force refresh data
       refreshBulletinInfo();
       
       setIsUpdating(false);
@@ -113,20 +105,6 @@ const BulletinEditor = () => {
       return;
     }
     
-    // Basic URL validation
-    try {
-      new URL(bulletinState.formLink);
-    } catch (e) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter a valid URL for the form link.",
-        variant: "destructive"
-      });
-      setIsError(true);
-      setTimeout(() => setIsError(false), 3000);
-      return;
-    }
-    
     setIsSuccess(false);
     setIsError(false);
     setIsUpdating(true);
@@ -140,18 +118,7 @@ const BulletinEditor = () => {
         formLink: bulletinState.formLink.trim()
       });
       
-      // Save with timestamp to force cache invalidation
-      const timestamp = new Date().getTime();
-      const bulletinData = {
-        text: bulletinState.text.trim(),
-        formLink: bulletinState.formLink.trim(),
-        lastUpdated: timestamp
-      };
-      
-      // Explicitly set in localStorage with timestamp
-      localStorage.setItem("bulletinInfo", JSON.stringify(bulletinData));
-      
-      // Clear any possible cached data
+      // Force a cache clear
       if ('caches' in window) {
         try {
           const cacheNames = await caches.keys();
@@ -169,7 +136,7 @@ const BulletinEditor = () => {
       // Show success toast
       toast({
         title: "Bulletin Updated",
-        description: "Changes have been published successfully and will be visible to all users.",
+        description: "Changes have been published successfully.",
         variant: "default"
       });
       
@@ -256,7 +223,7 @@ const BulletinEditor = () => {
             disabled={isUpdating}
           >
             <RefreshCw size={16} className="mr-2" />
-            {isUpdating ? "Processing..." : "Clear Cache"}
+            {isUpdating ? "Processing..." : "Reset to Default"}
           </button>
         </div>
       </form>

@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Orbit, Link } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -14,10 +13,10 @@ const Index = () => {
   const containerRef = useRef(null);
   const isMobile = useIsMobile();
   const [announcement, setAnnouncement] = useState({
-    text: bulletinInfo?.text || "",
-    formLink: bulletinInfo?.formLink || "#",
+    text: "Applications are now open . click here",
+    formLink: "https://docs.google.com/forms/d/e/1FAIpQLScoTPloDuYsuSId-j6OVgHTRFSsN6eF2Y6O2RUvQL_O7CHlBA/viewform?usp=header",
     key: Date.now(),
-    isLoading: true
+    isLoading: false
   });
   
   const { scrollYProgress } = useScroll({
@@ -35,23 +34,15 @@ const Index = () => {
       setAnnouncement({
         text: bulletinInfo.text,
         formLink: bulletinInfo.formLink,
-        key: bulletinInfo.lastUpdated || Date.now(),
+        key: Date.now(), // Use current timestamp to force re-render
         isLoading: false
       });
-    } else {
-      // Handle empty bulletin info
-      console.warn("Index: Empty or invalid bulletin info received");
-      setAnnouncement(prev => ({
-        ...prev,
-        isLoading: false
-      }));
     }
   }, [bulletinInfo]);
   
-  // Refresh bulletin data when component mounts and periodically
+  // Refresh bulletin data when component mounts
   useEffect(() => {
     console.log("Index: Component mounted, refreshing bulletin");
-    // Always refresh when component mounts
     refreshBulletinInfo();
     
     // Set up interval to check for updates

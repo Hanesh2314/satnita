@@ -60,8 +60,9 @@
     Expires = "0"
     Content-Security-Policy = "upgrade-insecure-requests"
 
-# ✅ Ensures Netlify detects form submissions
+# ✅ Ensures Netlify detects form submissions and no caching issues
 [[headers]]
   for = "/"
   [headers.values]
     Content-Type = "text/html; charset=UTF-8"
+    Cache-Control = "no-cache, no-store, must-revalidate"

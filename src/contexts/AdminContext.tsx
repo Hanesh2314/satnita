@@ -56,9 +56,10 @@ const defaultContactInfo: ContactInfo = {
   }
 };
 
+// Set the default bulletin info with the specified content and link
 const defaultBulletinInfo: BulletinInfo = {
-  text: "Applications are now open for the Student Satellite Program! Last date for receipt of applications: 31.10.2024. Click here to apply now.",
-  formLink: "https://forms.google.com/studentsat-application",
+  text: "Applications are now open . click here",
+  formLink: "https://docs.google.com/forms/d/e/1FAIpQLScoTPloDuYsuSId-j6OVgHTRFSsN6eF2Y6O2RUvQL_O7CHlBA/viewform?usp=header",
   lastUpdated: Date.now()
 };
 
@@ -83,26 +84,16 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   
   const [bulletinInfo, setBulletinInfo] = useState<BulletinInfo>(() => {
     try {
-      // Always attempt to get fresh data by adding a cache buster
-      const saved = localStorage.getItem("bulletinInfo");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Ensure we have a lastUpdated field
-        if (parsed && parsed.text && parsed.formLink) {
-          return {
-            ...parsed,
-            lastUpdated: parsed.lastUpdated || Date.now()
-          };
-        }
-      }
+      // Clear any existing bulletin info to ensure we use the new default
+      localStorage.removeItem("bulletinInfo");
       return defaultBulletinInfo;
     } catch (error) {
-      console.error("Error parsing bulletin info:", error);
+      console.error("Error initializing bulletin info:", error);
       return defaultBulletinInfo;
     }
   });
 
-  // Add a refresh function to force new bulletin data
+  // Simplify refresh function to always use valid data
   const refreshBulletinInfo = useCallback(() => {
     try {
       console.log("Refreshing bulletin info...");
@@ -112,31 +103,25 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
           const parsed = JSON.parse(saved);
           if (parsed && parsed.text && parsed.formLink) {
             console.log("Found valid bulletin info in localStorage:", parsed);
-            // Always update with a new timestamp to force re-rendering
             setBulletinInfo({
               text: parsed.text,
               formLink: parsed.formLink,
-              lastUpdated: Date.now() // Update timestamp to force rerender
+              lastUpdated: Date.now()
             });
-            return; // Exit early if we found valid data
-          } else {
-            console.log("Bulletin info from localStorage is incomplete");
+            return;
           }
         } catch (e) {
           console.error("Failed to parse bulletin info:", e);
         }
-      } else {
-        console.log("No bulletin info found in localStorage");
       }
       
-      // If we reach here, we didn't find valid data or had an error
+      // If we reach here, set the default values
       setBulletinInfo({
         ...defaultBulletinInfo,
         lastUpdated: Date.now()
       });
     } catch (error) {
       console.error("Error refreshing bulletin info:", error);
-      // Fall back to default in case of any errors
       setBulletinInfo({
         ...defaultBulletinInfo,
         lastUpdated: Date.now()
@@ -144,15 +129,9 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Add an interval to check for bulletin updates
+  // Initialize bulletin info on mount
   useEffect(() => {
-    refreshBulletinInfo(); // Initial load
-    
-    const checkInterval = setInterval(() => {
-      refreshBulletinInfo();
-    }, 30000); // Check every 30 seconds
-    
-    return () => clearInterval(checkInterval);
+    refreshBulletinInfo();
   }, [refreshBulletinInfo]);
 
   useEffect(() => {
@@ -164,16 +143,17 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   }, [contactInfo]);
   
   useEffect(() => {
-    // Only save if bulletin info has valid content
+    // Ensure bulletin info is always valid
     if (bulletinInfo.text && bulletinInfo.formLink) {
       console.log("Saving bulletin info to localStorage:", bulletinInfo);
       localStorage.setItem("bulletinInfo", JSON.stringify({
         text: bulletinInfo.text,
         formLink: bulletinInfo.formLink,
-        lastUpdated: bulletinInfo.lastUpdated || Date.now()
+        lastUpdated: Date.now() // Always use current timestamp
       }));
     } else {
-      console.warn("Attempted to save empty bulletin info, preserving previous value");
+      // If invalid, restore defaults
+      localStorage.setItem("bulletinInfo", JSON.stringify(defaultBulletinInfo));
     }
   }, [bulletinInfo]);
   
@@ -202,7 +182,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const updateBulletinInfo = (newBulletinInfo: BulletinInfo) => {
-    // Validate input to prevent empty announcements
+    // Ensure we never save empty content
     if (!newBulletinInfo.text || !newBulletinInfo.formLink) {
       console.error("Cannot update with empty bulletin content");
       return;
@@ -210,9 +190,17 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     
     console.log("Updating bulletin info:", newBulletinInfo);
     setBulletinInfo({
-      ...newBulletinInfo,
-      lastUpdated: Date.now() // Always update the timestamp
+      text: newBulletinInfo.text,
+      formLink: newBulletinInfo.formLink,
+      lastUpdated: Date.now()
     });
+    
+    // Explicitly save to localStorage right away
+    localStorage.setItem("bulletinInfo", JSON.stringify({
+      text: newBulletinInfo.text,
+      formLink: newBulletinInfo.formLink,
+      lastUpdated: Date.now()
+    }));
   };
 
   return (
